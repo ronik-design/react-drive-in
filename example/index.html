@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Example | React Drive-In</title>
+    <link rel="stylesheet" href="http://necolas.github.io/normalize.css/3.0.1/normalize.css">
+    <link rel="stylesheet" href="react-drive-in.css">
+    <style>
+      @media screen and (min-width: 600px) {
+        .content {
+          width: 100%;
+        }
+      }
+
+      @media screen and (min-width: 960px) {
+        .content {
+          width: 70%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <div id="drive-in"></div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.1/react-with-addons.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.1/JSXTransformer.js"></script>
+    <script src="react-drive-in.js"></script>
+    <script type="text/jsx">
+      /** @jsx React.DOM */
+      var DriveIn = ReactDriveIn;
+
+      React.renderComponent(
+        <DriveIn from='youtube' id='jhg8XRTorYg' />,
+        document.getElementById('drive-in')
+      );
+
+    </script>
+  </body>
+</html>
