@@ -49,7 +49,7 @@ Gulp.task('css', function() {
             .pipe(Header(require('./utils/banner')))
             .pipe(Gulp.dest('./dist'));
     } else {
-        return Gulp.src('./lib/*.styl')
+        return Gulp.src('./lib/*.less')
             .pipe(Less())
             .pipe(Header(require('./utils/banner')))
             .pipe(Gulp.dest('./dist'));
@@ -58,6 +58,7 @@ Gulp.task('css', function() {
 
 Gulp.task('server', function() {
     BrowserSync({
+        browser: 'google chrome',
         server: {
             baseDir: ['example', 'dist']
         }
@@ -74,7 +75,7 @@ Gulp.task('deploy', function() {
         .pipe(deploy());
 });
 
-Gulp.task('bundle', shell.task([
+Gulp.task('bundle', Shell.task([
     'gulp webpack',
     'gulp webpack -p',
     'gulp css',
