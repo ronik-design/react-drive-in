@@ -5,7 +5,22 @@
  * @license ISC
  * @author  ()
 */
+html,
 body {
-  height: auto;
-  min-height: 500px;
+  height: 100%;
+}
+#drive-in-wrap {
+  overflow: hidden;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+#drive-in-media {
+  position: absolute;
+}
+#drive-in-media video {
+  position: absolute;
+  -webkit-transform: translate3d(0, 0, 0);
 }
