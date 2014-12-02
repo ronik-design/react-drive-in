@@ -6,6 +6,7 @@ var GLOBAL_VAR = 'ReactDriveIn';
 
 module.exports = {
     entry: './lib/' + LIB_NAME + '.jsx',
+    devtool: 'source-map',
     output: {
         path: __dirname + '/dist',
         filename: LIB_NAME + '.js',

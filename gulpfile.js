@@ -66,7 +66,7 @@ Gulp.task('server', function() {
 });
 
 Gulp.task('watch', function() {
-    Gulp.watch('./lib/**/*.jsx', ['webpack', BrowserSync.reload]);
+    Gulp.watch('./lib/**/*.js?(x)', ['webpack', BrowserSync.reload]);
     Gulp.watch('./lib/*.less', ['css', BrowserSync.reload]);
 });
 
