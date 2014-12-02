@@ -1,74 +1,35 @@
 var React = require('react');
-
 var DriveIn = require('./drive-in');
-
-function playlistItem(src) {
-    var item = {},
-        type,
-        videoExts = { mp4: true, ogg: true, webm: true },
-        imageExts = { jpg: true, png: true, gif: true };
-
-    var ext = src.match(/\.([mp4|ogg|webm|jpg|png|gif]+)$/)[1];
-    if (videoExts[ext]) {
-        type = 'video/' + ext;
-    }
-
-    if (imageExts[ext]) {
-        type = 'image/' + ext;
-    }
-
-    item[type] = src;
-    return item;
-}
-
-function makePlaylist(toShow) {
-    var playlist = [];
-
-    if (typeof(toShow) === 'string') {
-        playlist.push(playlistItem(toShow));
-    }
-
-    if (toShow.constructor === Array) {
-        for (var i in toShow) {
-            playlist.push(makePlaylist(toShow[i]));
-        }
-    }
-
-    if (toShow.constructor === Object) {
-        playlist.push(toShow);
-    }
-
-    return playlist;
-}
 
 module.exports = React.createClass({
     displayName: 'DriveIn',
 
     propTypes: {
-        show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object, React.PropTypes.array]).isRequired,
-        poster: React.PropTypes.string.isRequired,
-        ambient: React.PropTypes.bool
+        show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
+        showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
+        poster: React.PropTypes.string,
+        duration: React.PropTypes.number,
+        mute: React.PropTypes.bool,
+        loop: React.PropTypes.bool,
+        onPlaying: React.PropTypes.func
     },
 
     getDefaultProps() {
         return {
             className: 'drive-in',
-            ambient: true
+            duration: 'auto',
+            mute: true,
+            loop: true
         };
     },
 
     getInitialState() {
         return {
-            thumb: null,
-            imageLoaded: false,
-            showingVideo: false,
-
             playlist: null,
             initialized: false,
-            seeking: false,
             playing: false,
-            queued: false,
-            ambient: true
+            mute: true,
+            currentItem: 0
         };
     },
 
@@ -80,27 +41,67 @@ module.exports = React.createClass({
         return this.state.playlist;
     },
 
-    getAmbient() {
-        return this.state.ambient;
+    setPlaying(currentItem) {
+        this.setState({
+            playing: true,
+            currentItem: currentItem
+        });
+
+        if (this.props.onPlaying) {
+            this.props.onPlaying();
+        }
     },
 
     componentWillMount() {
-        var playlist = makePlaylist(this.props.show);
-
-        this.setState({
-            playlist: playlist,
-            ambient: this.props.ambient
-        });
+        this.DI = new DriveIn();
     },
 
     componentDidMount() {
-        this.driveIn = new DriveIn();
-        this.driveIn.init(this.getMedia());
-        this.driveIn.show(this.getPlaylist(), { ambient: this.getAmbient() });
+        var DI = this.DI,
+            options,
+            playlist;
+
+        DI.init({ el: this.getMedia() });
+
+        options = {
+            mute: this.props.mute,
+            duration: this.props.duration,
+            loop: this.props.loop
+        };
+
+        if (this.props.showPlaylist) {
+            playlist = DI.showPlaylist(this.props.showPlaylist, options);
+        } else {
+            playlist = DI.show(this.props.show, options);
+        }
+
+        DI.on('media.playing', () => { this.setState({ playing: true }); });
+
+        this.setState({
+            mute: this.props.mute,
+            playlist: playlist,
+            initalized: true
+        });
     },
 
     componentWillUnmount() {
-        this.driveIn.close();
+        this.DI.close();
+    },
+
+    play(itemNum) {
+        this.DI.play(itemNum);
+    },
+
+    pause() {
+        this.DI.pause();
+    },
+
+    mute() {
+        this.DI.setVolume(0);
+    },
+
+    unmute() {
+        this.DI.setVolume(0.5);
     },
 
     renderMedia() {

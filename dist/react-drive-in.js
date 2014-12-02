@@ -63,76 +63,37 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */var React = __webpack_require__(1);
-	
 	var DriveIn = __webpack_require__(2);
-	
-	function playlistItem(src) {
-	    var item = {},
-	        type,
-	        videoExts = { mp4: true, ogg: true, webm: true },
-	        imageExts = { jpg: true, png: true, gif: true };
-	
-	    var ext = src.match(/\.([mp4|ogg|webm|jpg|png|gif]+)$/)[1];
-	    if (videoExts[ext]) {
-	        type = 'video/' + ext;
-	    }
-	
-	    if (imageExts[ext]) {
-	        type = 'image/' + ext;
-	    }
-	
-	    item[type] = src;
-	    return item;
-	}
-	
-	function makePlaylist(toShow) {
-	    var playlist = [];
-	
-	    if (typeof(toShow) === 'string') {
-	        playlist.push(playlistItem(toShow));
-	    }
-	
-	    if (toShow.constructor === Array) {
-	        for (var i in toShow) {
-	            playlist.push(makePlaylist(toShow[i]));
-	        }
-	    }
-	
-	    if (toShow.constructor === Object) {
-	        playlist.push(toShow);
-	    }
-	
-	    return playlist;
-	}
 	
 	module.exports = React.createClass({
 	    displayName: 'DriveIn',
 	
 	    propTypes: {
-	        show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object, React.PropTypes.array]).isRequired,
-	        poster: React.PropTypes.string.isRequired,
-	        ambient: React.PropTypes.bool
+	        show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
+	        showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
+	        poster: React.PropTypes.string,
+	        duration: React.PropTypes.number,
+	        mute: React.PropTypes.bool,
+	        loop: React.PropTypes.bool,
+	        onPlaying: React.PropTypes.func
 	    },
 	
 	    getDefaultProps:function() {
 	        return {
 	            className: 'drive-in',
-	            ambient: true
+	            duration: 'auto',
+	            mute: true,
+	            loop: true
 	        };
 	    },
 	
 	    getInitialState:function() {
 	        return {
-	            thumb: null,
-	            imageLoaded: false,
-	            showingVideo: false,
-	
 	            playlist: null,
 	            initialized: false,
-	            seeking: false,
 	            playing: false,
-	            queued: false,
-	            ambient: true
+	            mute: true,
+	            currentItem: 0
 	        };
 	    },
 	
@@ -144,27 +105,67 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.state.playlist;
 	    },
 	
-	    getAmbient:function() {
-	        return this.state.ambient;
+	    setPlaying:function(currentItem) {
+	        this.setState({
+	            playing: true,
+	            currentItem: currentItem
+	        });
+	
+	        if (this.props.onPlaying) {
+	            this.props.onPlaying();
+	        }
 	    },
 	
 	    componentWillMount:function() {
-	        var playlist = makePlaylist(this.props.show);
-	
-	        this.setState({
-	            playlist: playlist,
-	            ambient: this.props.ambient
-	        });
+	        this.DI = new DriveIn();
 	    },
 	
 	    componentDidMount:function() {
-	        this.driveIn = new DriveIn();
-	        this.driveIn.init(this.getMedia());
-	        this.driveIn.show(this.getPlaylist(), { ambient: this.getAmbient() });
+	        var DI = this.DI,
+	            options,
+	            playlist;
+	
+	        DI.init({ el: this.getMedia() });
+	
+	        options = {
+	            mute: this.props.mute,
+	            duration: this.props.duration,
+	            loop: this.props.loop
+	        };
+	
+	        if (this.props.showPlaylist) {
+	            playlist = DI.showPlaylist(this.props.showPlaylist, options);
+	        } else {
+	            playlist = DI.show(this.props.show, options);
+	        }
+	
+	        DI.on('media.playing', function()  { this.setState({ playing: true }); }.bind(this));
+	
+	        this.setState({
+	            mute: this.props.mute,
+	            playlist: playlist,
+	            initalized: true
+	        });
 	    },
 	
 	    componentWillUnmount:function() {
-	        this.driveIn.close();
+	        this.DI.close();
+	    },
+	
+	    play:function(itemNum) {
+	        this.DI.play(itemNum);
+	    },
+	
+	    pause:function() {
+	        this.DI.pause();
+	    },
+	
+	    mute:function() {
+	        this.DI.setVolume(0);
+	    },
+	
+	    unmute:function() {
+	        this.DI.setVolume(0.5);
 	    },
 	
 	    renderMedia:function() {
@@ -203,7 +204,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */function getMedia(el) {
+	/** @jsx React.DOM */var Jvent = __webpack_require__(3);
+	var inherits = __webpack_require__(4);
+	
+	function getMedia(el) {
 	    var media = {},
 	        children = el.children,
 	        node;
@@ -236,13 +240,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 	
+	function playlistItem(src) {
+	    var item = {},
+	        type,
+	        videoExts = { mp4: true, ogg: true, webm: true },
+	        imageExts = { jpg: true, png: true, gif: true };
+	
+	    var ext = src.match(/\.([mp4|ogg|webm|jpg|png|gif]+)$/)[1];
+	
+	    if (videoExts[ext]) {
+	        item.type = 'video/' + ext;
+	    }
+	
+	    if (imageExts[ext]) {
+	        item.type = 'image/' + ext;
+	    }
+	
+	    item.src = src;
+	
+	    return item;
+	}
+	
 	function DriveIn() {
 	    this.parentEl = null;
 	    this.mediaEl = null;
-	    this.ambient = true;
+	    this.mute = true;
 	    this.currMediaType = null;
 	    this.mediaAspect = 16 / 9;
+	    this.playlist = null;
+	
+	    this.playMany = false;
+	    this.currentItem = 0;
 	}
+	
+	inherits(DriveIn, Jvent);
+	
+	DriveIn.prototype.init = function(options) {
+	    var self = this,
+	        media;
+	
+	    this.parentEl = options.el;
+	    setStyles(this.parentEl, {
+	        display: 'block'
+	    });
+	
+	    media = getMedia(this.parentEl);
+	
+	    this._setMedia(media);
+	    this._attachListeners();
+	};
 	
 	DriveIn.prototype._updateSize = function() {
 	
@@ -286,23 +332,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                height: containerH + 'px'
 	            });
 	
-	            //         player
-	            //             .width(containerH * mediaAspect)
-	            //             .height(containerH);
-	            //         if (!settings.shrinkable) {
-	            //             $(vidEl)
-	            //                 .css('top', 0)
-	            //                 .css('left', -(containerH * mediaAspect - containerW) / 2)
-	            //                 .css('height', containerH);
-	            //         } else {
-	            //             $(vidEl)
-	            //                 .css('top', -(containerW / mediaAspect - containerH) / 2)
-	            //                 .css('left', 0)
-	            //                 .css('height', containerW / mediaAspect);
-	            //         }
-	            //         $(vidEl + '_html5_api')
-	            //             .css('width', containerH * mediaAspect)
-	            //             .css('height', containerH);
 	        } else {
 	            // is image
 	
@@ -320,11 +349,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // wider
 	        if (currMediaType == 'video') {
 	
-	            // setStyles(mediaEl, {
-	            //     width: containerW + 'px',
-	            //     height: Math.ceil(containerW / mediaAspect) + 'px'
-	            // });
-	
 	            setStyles(parentEl, {
 	                top: -Math.ceil(containerW / mediaAspect - containerH) / 2 + 'px',
 	                left: 0 + 'px',
@@ -337,19 +361,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                height: 'auto'
 	            });
 	
-	            //         player
-	            //             .width(containerW)
-	            //             .height(containerW / mediaAspect);
-	            //         $(vidEl)
-	            //             .css('top', -(containerW / mediaAspect - containerH) / 2)
-	            //             .css('left', 0)
-	            //             .css('height', containerW / mediaAspect);
-	            //         $(vidEl + '_html5_api')
-	            //             .css('width', $(vidEl + '_html5_api').parent().width() + "px")
-	            //             .css('height', 'auto');
-	            //         $(vidEl + '_flash_api')
-	            //             .css('width', containerW)
-	            //             .css('height', containerW / mediaAspect);
 	        } else {
 	            // is image
 	
@@ -362,7 +373,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //             });
 	        }
 	    }
-	}
+	};
 	
 	DriveIn.prototype._setMetadata = function(data) {
 	    var mediaEl = this.mediaEl;
@@ -376,96 +387,340 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // vidDur = durMinutes+':'+durSeconds;
 	};
 	
-	DriveIn.prototype._play = function (video, loop, ambient) {
+	DriveIn.prototype._playItem = function(item) {
 	    var mediaEl = this.mediaEl,
 	        source,
+	        src,
 	        canPlay;
 	
-	    for (var type in video) {
-	        canPlay = mediaEl.canPlayType(type);
+	    for (var i in item) {
+	        source = item[i];
+	        canPlay = mediaEl.canPlayType(source.type);
+	
 	        if (canPlay === 'probably') {
-	            source = video[type]
-	        } else if (canPlay && !source) {
-	            source = video[type];
+	            src = source.src;
+	        } else if (canPlay && !src) {
+	            src = source.src;
 	        }
 	    }
 	
-	    if (source) {
+	    if (src) {
+	        setStyles(this.mediaEl, {
+	            '-webkit-transform': 'translate3d(0, 0, 0)'
+	        });
 	
-	        this.mediaEl.src = source;
+	        this.mediaEl.src = src;
 	
-	        if (loop) {
+	        if (!this.playMany) {
 	            this.mediaEl.loop = true;
 	        }
 	
-	        if (ambient) {
-	            this.mediaEl.muted = true;
-	            this.mediaEl.volume = 0;
+	        if (this.mute) {
+	            this.setVolume(0);
 	        }
 	
 	        this.mediaEl.play();
 	    }
-	}
+	};
 	
-	DriveIn.prototype._loadPlaylist = function (playlist) {
-	    var item = playlist[0];
-	    this._play(item, (playlist.length === 1), this.ambient);
+	DriveIn.prototype.setVolume = function (level) {
+	    if (level === 0) {
+	        this.mediaEl.muted = true;
+	        this.mediaEl.volume = 0;
+	    } else {
+	        this.mediaEl.muted = false;
+	        this.mediaEl.volume = level;
+	    }
+	};
 	
-	    // for (var i in playlist) {
-	    //     item = playlist[i];
-	    // }
+	DriveIn.prototype._loadPlaylist = function(playlist) {
+	    this.playlist = playlist;
+	    this.playMany = (playlist.length > 1);
+	    this._playItem(playlist[0]);
+	};
 	
+	DriveIn.prototype._attachListeners = function() {
+	    var self = this;
+	
+	    window.onresize = function() {
+	        self._updateSize();
+	    };
+	
+	    if (this.currMediaType === 'video') {
+	        this.mediaEl.onloadedmetadata = function(data) {
+	            self._setMetadata(data);
+	        };
+	
+	        this.mediaEl.onplaying = function() {
+	            self.emit('media.playing', this.currentItem);
+	        };
+	    }
+	
+	    if (this.currMediaType === 'image') {
+	        // imagesloaded or something...
+	    }
 	};
 	
 	DriveIn.prototype._setMedia = function(media) {
 	    var self = this;
 	
 	    this.mediaEl = media.el;
-	    setStyles(this.mediaEl, { position: 'absolute' });
+	    setStyles(this.mediaEl, {
+	        position: 'absolute'
+	    });
 	
 	    this.currMediaType = media.type;
-	
-	    if (media.type === 'video') {
-	        this.mediaEl.onloadedmetadata = function(data) {
-	            self._setMetadata(data);
-	        };
-	    }
-	
-	    if (media.type === 'image') {
-	        // imagesloaded or something...
-	    }
-	}
-	
-	DriveIn.prototype.init = function(el) {
-	    var self = this;
-	
-	    this.parentEl = el;
-	    setStyles(this.parentEl, { display: 'block' });
-	
-	    var media = getMedia(el);
-	    this._setMedia(media);
-	
-	    window.onresize = function() {
-	        self._updateSize();
-	    };
 	};
 	
-	DriveIn.prototype.show = function(playlist, options) {
-	    options = options || {};
+	/**
 	
-	    if (options.hasOwnProperty('ambient')) {
-	        this.ambient = options.ambient;
+	    show='foo.mp4' // simple
+	    show=[ 'foo.mp4', 'foo.webm' ] // simple playlist
+	    show=[ {}, {} ] // fallback
+	    show=[ [ {}, {} ] ] // playlist with fallback
+	
+	    inputs: String-src,
+	    canonical: [ [{ type, src }, { type, src }, {}], [{}, {}, {}], [] ]
+	
+	 */
+	
+	DriveIn.prototype.show = function (item, options) {
+	    if (item.constructor === Array) {
+	        return this.showPlaylist([ item ], options);
 	    }
 	
+	    if (item.constructor === Object) {
+	        return this.showPlaylist([[ item ]], options);
+	    }
+	
+	    return this.showPlaylist([[ playlistItem(item) ]], options);
+	};
+	
+	DriveIn.prototype.showPlaylist = function (playlist, options) {
+	    if (options.hasOwnProperty('mute')) {
+	        this.mute = options.mute;
+	    }
 	    this._loadPlaylist(playlist);
+	};
+	
+	DriveIn.prototype.getMedia = function() {
+	    return this.mediaEl;
+	};
+	
+	DriveIn.prototype.getPlaylist = function() {
+	    return this.playlist;
+	};
+	
+	DriveIn.prototype.play = function (itemNum) {
+	    if (typeof itemNum === 'number') {
+	        this._playItem(this.playlist[itemNum]);
+	    } else {
+	        this.mediaEl.play();
+	    }
+	};
+	
+	DriveIn.prototype.pause = function () {
+	    this.mediaEl.pause();
 	};
 	
 	DriveIn.prototype.close = function() {
 	
 	};
 	
-	
 	module.exports = DriveIn;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */'use strict';
+	
+	function Jvent() {}
+	
+	/**
+	 * Adds a listener to the collection for a specified event.
+	 * @public
+	 * @function
+	 * @name Jvent#on
+	 * @param {string} event Event name.
+	 * @param {function} listener Listener function.
+	 * @example
+	 * // Will add a event listener to the "ready" event
+	 * var startDoingStuff = function (event, param1, param2, ...) {
+	 *   // Some code here!
+	 * };
+	 *
+	 * me.on("ready", startDoingStuff);
+	 */
+	Jvent.prototype.on = function(event, listener) {
+	  this._collection = this._collection || {};
+	  this._collection[event] = this._collection[event] || [];
+	  this._collection[event].push(listener);
+	  return this;
+	};
+	
+	/**
+	 * Adds a one time listener to the collection for a specified event. It will execute only once.
+	 * @public
+	 * @function
+	 * @name Jvent#once
+	 * @param {string} event Event name.
+	 * @param {function} listener Listener function.
+	 * @returns itself
+	 * @example
+	 * // Will add a event handler to the "contentLoad" event once
+	 * me.once("contentLoad", startDoingStuff);
+	 */
+	Jvent.prototype.once = function (event, listener) {
+	  var that = this;
+	
+	  function fn() {
+	    that.off(event, fn);
+	    listener.apply(this, arguments);
+	  }
+	
+	  fn.listener = listener;
+	
+	  this.on(event, fn);
+	
+	  return this;
+	};
+	
+	/**
+	 * Removes a listener from the collection for a specified event.
+	 * @public
+	 * @function
+	 * @name Jvent#off
+	 * @param {string} event Event name.
+	 * @param {function} listener Listener function.
+	 * @returns itself
+	 * @example
+	 * // Will remove event handler to the "ready" event
+	 * var startDoingStuff = function () {
+	 *   // Some code here!
+	 * };
+	 *
+	 * me.off("ready", startDoingStuff);
+	 */
+	Jvent.prototype.off = function (event, listener) {
+	
+	  var listeners = this._collection[event],
+	      j = 0;
+	
+	  if (listeners !== undefined) {
+	    for (j; j < listeners.length; j += 1) {
+	      if (listeners[j] === listener || listeners[j].listener === listener) {
+	        listeners.splice(j, 1);
+	        break;
+	      }
+	    }
+	  }
+	
+	  if (listeners.length === 0) {
+	    this.removeAllListeners(event);
+	  }
+	
+	  return this;
+	};
+	
+	/**
+	 * Removes all listeners from the collection for a specified event.
+	 * @public
+	 * @function
+	 * @name Jvent#removeAllListeners
+	 * @param {string} event Event name.
+	 * @returns itself
+	 * @example
+	 * me.removeAllListeners("ready");
+	 */
+	Jvent.prototype.removeAllListeners = function (event) {
+	  this._collection = this._collection || {};
+	  delete this._collection[event];
+	  return this;
+	};
+	
+	/**
+	 * Returns all listeners from the collection for a specified event.
+	 * @public
+	 * @function
+	 * @name Jvent#listeners
+	 * @param {string} event Event name.
+	 * @returns Array
+	 * @example
+	 * me.listeners("ready");
+	 */
+	Jvent.prototype.listeners = function (event) {
+	  this._collection = this._collection || {};
+	  return this._collection[event];
+	};
+	
+	/**
+	 * Execute each item in the listener collection in order with the specified data.
+	 * @name Jvent#emit
+	 * @public
+	 * @protected
+	 * @param {string} event The name of the event you want to emit.
+	 * @param {...object} var_args Data to pass to the listeners.
+	 * @example
+	 * // Will emit the "ready" event with "param1" and "param2" as arguments.
+	 * me.emit("ready", "param1", "param2");
+	 */
+	Jvent.prototype.emit = function () {
+	  if (this._collection === undefined) {
+	    return this;
+	  }
+	
+	  var args = [].slice.call(arguments, 0), // converted to array
+	      event = args.shift(),
+	      listeners = this._collection[event],
+	      i = 0,
+	      len;
+	
+	  if (listeners) {
+	    listeners = listeners.slice(0);
+	    len = listeners.length;
+	    for (i; i < len; i += 1) {
+	      listeners[i].apply(this, args);
+	    }
+	  }
+	
+	  return this;
+	};
+	
+	/**
+	 * Expose
+	 */
+	module.exports = Jvent;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
 
 
 /***/ }
