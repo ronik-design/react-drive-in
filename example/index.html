@@ -6,19 +6,6 @@
     <title>Example | React Drive-In</title>
     <link rel="stylesheet" href="http://necolas.github.io/normalize.css/3.0.1/normalize.css">
     <link rel="stylesheet" href="react-drive-in.css">
-    <style>
-      @media screen and (min-width: 600px) {
-        .content {
-          width: 100%;
-        }
-      }
-
-      @media screen and (min-width: 960px) {
-        .content {
-          width: 70%;
-        }
-      }
-    </style>
   </head>
   <body>
     <div class="content">
@@ -32,21 +19,22 @@
       /** @jsx React.DOM */
       var DriveIn = ReactDriveIn;
 
-      function onPlaying(item) {
-        console.log('item is playing:', item);
-      }
+      // function onPlaying(item) {
+      //   console.log('item is playing:', item);
+      // }
 
       var playlist = [
         // 'http://i.imgur.com/ZUwhYzY.jpg'
-        ['http://dfcb.github.io/BigVideo.js/vids/river.mp4', 'http://i.imgur.com/ZUwhYzY.jpg'],
-        ['http://dfcb.github.io/BigVideo.js/vids/dock.mp4', 'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg']
-        // 'http://vjs.zencdn.net/v/oceans.mp4'
+        // ['http://dfcb.github.io/BigVideo.js/vids/river.mp4', 'http://i.imgur.com/ZUwhYzY.jpg'],
+        // ['http://dfcb.github.io/BigVideo.js/vids/dock.mp4', 'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg']
+        'http://vjs.zencdn.net/v/oceans.mp4'
       ];
 
       React.renderComponent(
         <DriveIn
           showPlaylist={playlist}
-          onPlaying={onPlaying} />,
+          // onPlaying={onPlaying}
+          />,
         document.getElementById('drive-in')
       );
 

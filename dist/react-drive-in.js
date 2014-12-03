@@ -237,9 +237,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function setStyles(el, props) {
+	    var cssString = '';
+	
 	    for (var p in props) {
-	        el.style[p] = props[p];
+	        cssString += p + ':' + props[p] + ';';
+	        // el.style[p] = props[p];
 	    }
+	
+	    // console.log(cssString);
+	
+	    el.style.cssText += ';' + cssString;
 	}
 	
 	function playlistItem(src) {
@@ -449,9 +456,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    if (src) {
 	
-	        setStyles(this.mediaEl, {
-	            '-webkit-transform': 'translate3d(0, 0, 0)'
-	        });
+	        // setStyles(this.mediaEl, {
+	        //     '-webkit-transform': 'translate3d(0, 0, 0)'
+	        // });
 	
 	        this.mediaEl.src = src;
 	
@@ -527,7 +534,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var self = this;
 	
 	    window.addEventListener('resize', function() {
-	        window.requestAnimationFrame(self._updateSize.bind(self));
+	        self._updateSize();
+	        // window.requestAnimationFrame(self._updateSize.bind(self));
 	    });
 	
 	    if (this.currMediaType === 'video') {
