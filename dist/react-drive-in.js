@@ -230,12 +230,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return media;
 	}
 	
-	function isBody(el) {
-	    if (el.nodeName === 'BODY') {
-	        return true;
-	    }
-	}
-	
 	function setStyles(el, props) {
 	    var cssString = '';
 	
@@ -336,6 +330,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._attachListeners();
 	};
 	
+	function windowWidth() {
+	  if (self.innerHeight) {
+	    return self.innerWidth;
+	  }
+	
+	  if (document.documentElement && document.documentElement.clientHeight) {
+	    return document.documentElement.clientWidth;
+	  }
+	
+	  if (document.body) {
+	    return document.body.clientWidth;
+	  }
+	}
+	
+	function windowHeight() {
+	  if (self.innerHeight) {
+	    return self.innerHeight;
+	  }
+	
+	  if (document.documentElement && document.documentElement.clientHeight) {
+	    return document.documentElement.clientHeight;
+	  }
+	
+	  if (document.body) {
+	    return document.body.clientHeight;
+	  }
+	}
+	
 	DriveIn.prototype._updateSize = function() {
 	
 	    var container = document.body,
@@ -344,15 +366,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        mediaAspect = this.mediaAspect,
 	        currMediaType = this.currMediaType;
 	
-	    var containerW = container.offsetWidth < window.outerWidth ? container.offsetWidth : window.outerWidth,
-	        containerH = container.offsetHeight < window.outerHeight ? container.offsetHeight : window.outerHeight,
+	    var winW = windowWidth(),
+	        winH = windowHeight(),
+	        containerW = container.offsetWidth < winW ? container.offsetWidth : winW,
+	        containerH = container.offsetHeight < winH ? container.offsetHeight : winH,
 	        containerAspect = containerW / containerH;
 	
-	    if (isBody(container)) {
+	    if (container.nodeName === 'BODY') {
 	        setStyles(container, {
 	            height: 'auto'
 	        });
-	        if (window.outerHeight > container.offsetHeight) {
+	
+	        if (winH > container.offsetHeight) {
 	            setStyles(container, {
 	                height: '100%'
 	            });
@@ -366,15 +391,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // taller
 	        if (currMediaType == 'video') {
 	
-	            setStyles(mediaEl, {
+	            setStyles(parentEl, {
 	                width: containerH * mediaAspect + 'px',
 	                height: containerH + 'px'
 	            });
 	
 	            setStyles(parentEl, {
-	                top: 0 + 'px',
-	                left: (-(containerH * mediaAspect - containerW) / 2) + 'px',
-	                width: (containerH * mediaAspect) + 'px',
+	                top: 0,
+	                left: (-(containerH*mediaAspect-containerW)/2) + 'px',
+	                height: containerH + 'px'
+	            });
+	
+	            setStyles(mediaEl, {
+	                width: (containerH*mediaAspect) + 'px',
 	                height: containerH + 'px'
 	            });
 	
@@ -395,10 +424,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (currMediaType == 'video') {
 	
 	            setStyles(parentEl, {
-	                top: -Math.ceil(containerW / mediaAspect - containerH) / 2 + 'px',
-	                left: 0 + 'px',
 	                width: containerW + 'px',
-	                height: (containerW / mediaAspect) + 'px'
+	                height: (containerW/mediaAspect) + 'px'
+	            });
+	
+	            setStyles(parentEl, {
+	                top: (-(containerW/mediaAspect-containerH)/2) + 'px',
+	                left: 0,
+	                height: (containerW/mediaAspect) + 'px'
 	            });
 	
 	            setStyles(mediaEl, {
@@ -455,10 +488,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    if (src) {
-	
-	        // setStyles(this.mediaEl, {
-	        //     '-webkit-transform': 'translate3d(0, 0, 0)'
-	        // });
 	
 	        this.mediaEl.src = src;
 	
@@ -534,8 +563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var self = this;
 	
 	    window.addEventListener('resize', function() {
-	        self._updateSize();
-	        // window.requestAnimationFrame(self._updateSize.bind(self));
+	        window.requestAnimationFrame(self._updateSize.bind(self));
 	    });
 	
 	    if (this.currMediaType === 'video') {
