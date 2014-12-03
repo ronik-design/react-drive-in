@@ -5,11 +5,31 @@
  * @license ISC
  * @author  ()
 */
-* {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  *behavior: url(boxsizing.htc);
+html,
+body {
+  height: 100%;
+}
+.content {
+  position: relative;
+  top: 65%;
+  transform: translateY(-65%);
+  text-align: center;
+}
+h1 {
+  font-family: 'Mouse Memoirs', sans-serif;
+  margin: 0px;
+}
+.car {
+  display: inline-block;
+  position: relative;
+}
+.car i {
+  font-size: 800%;
+}
+.car svg {
+  position: absolute;
+  top: 63px;
+  left: 5px;
 }
 #drive-in-wrap {
   overflow: hidden;

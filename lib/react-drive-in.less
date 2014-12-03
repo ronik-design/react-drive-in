@@ -1,8 +1,28 @@
-* { -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box; *behavior:url(boxsizing.htc); }
-// html, body {
-//     height: 100%;
-// }
-
+html, body {
+    height: 100%;
+}
+.content {
+    position: relative;
+    top: 65%;
+    transform: translateY(-65%);
+    text-align: center;
+}
+h1 {
+    font-family: 'Mouse Memoirs', sans-serif;
+    margin: 0px;
+}
+.car {
+    display: inline-block;
+    position: relative;
+    i {
+        font-size: 800%;
+    }
+    svg {
+        position: absolute;
+        top: 63px;
+        left: 5px;
+    }
+}
 #drive-in-wrap {
     overflow: hidden;
     position: fixed;
@@ -12,11 +32,9 @@
     left: 0;
     z-index: -10000;
 }
-
 #drive-in-media {
     position: absolute;
 }
-
 #drive-in-media video {
     position: absolute;
     // -webkit-transform: translate3d(0, 0, 0);

@@ -230,6 +230,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return media;
 	}
 	
+	function windowWidth() {
+	  if (self.innerHeight) {
+	    return self.innerWidth;
+	  }
+	
+	  if (document.documentElement && document.documentElement.clientHeight) {
+	    return document.documentElement.clientWidth;
+	  }
+	
+	  if (document.body) {
+	    return document.body.clientWidth;
+	  }
+	}
+	
+	function windowHeight() {
+	  if (self.innerHeight) {
+	    return self.innerHeight;
+	  }
+	
+	  if (document.documentElement && document.documentElement.clientHeight) {
+	    return document.documentElement.clientHeight;
+	  }
+	
+	  if (document.body) {
+	    return document.body.clientHeight;
+	  }
+	}
+	
 	function setStyles(el, props) {
 	    var cssString = '';
 	
@@ -329,34 +357,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._setMedia(media);
 	    this._attachListeners();
 	};
-	
-	function windowWidth() {
-	  if (self.innerHeight) {
-	    return self.innerWidth;
-	  }
-	
-	  if (document.documentElement && document.documentElement.clientHeight) {
-	    return document.documentElement.clientWidth;
-	  }
-	
-	  if (document.body) {
-	    return document.body.clientWidth;
-	  }
-	}
-	
-	function windowHeight() {
-	  if (self.innerHeight) {
-	    return self.innerHeight;
-	  }
-	
-	  if (document.documentElement && document.documentElement.clientHeight) {
-	    return document.documentElement.clientHeight;
-	  }
-	
-	  if (document.body) {
-	    return document.body.clientHeight;
-	  }
-	}
 	
 	DriveIn.prototype._updateSize = function() {
 	

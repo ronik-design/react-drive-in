@@ -4,15 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Example | React Drive-In</title>
-    <link rel="stylesheet" href="http://necolas.github.io/normalize.css/3.0.1/normalize.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Mouse+Memoirs' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="react-drive-in.css">
   </head>
   <body>
     <div class="content">
-      <div id="drive-in"></div>
+      <!-- <h1>React at the Drive-In!</h1> -->
+      <h1>React at the Drive-In!</h1>
+      <div class="car">
+        <svg width="133" height="30" xmlns="http://www.w3.org/2000/svg">
+          <rect width="133" height="30"/>
+        </svg>
+        <i class="fa fa-car"></i>
+      </div>
     </div>
+    <div id="drive-in"></div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.1/react-with-addons.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.1/JSXTransformer.js"></script>
     <script src="react-drive-in.js"></script>
@@ -20,21 +29,21 @@
       /** @jsx React.DOM */
       var DriveIn = ReactDriveIn;
 
-      // function onPlaying(item) {
-      //   console.log('item is playing:', item);
-      // }
+      function onPlaying(item) {
+        console.log('Item playing:', item);
+      }
 
       var playlist = [
         // 'http://i.imgur.com/ZUwhYzY.jpg'
-        // ['http://dfcb.github.io/BigVideo.js/vids/river.mp4', 'http://i.imgur.com/ZUwhYzY.jpg'],
-        // ['http://dfcb.github.io/BigVideo.js/vids/dock.mp4', 'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg']
+        ['http://dfcb.github.io/BigVideo.js/vids/river.mp4', 'http://i.imgur.com/ZUwhYzY.jpg'],
+        ['http://dfcb.github.io/BigVideo.js/vids/dock.mp4', 'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg'],
         'http://vjs.zencdn.net/v/oceans.mp4'
       ];
 
       React.renderComponent(
         <DriveIn
           showPlaylist={playlist}
-          // onPlaying={onPlaying}
+          onPlaying={onPlaying}
           />,
         document.getElementById('drive-in')
       );
