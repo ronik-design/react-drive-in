@@ -32,8 +32,21 @@
       /** @jsx React.DOM */
       var DriveIn = ReactDriveIn;
 
+      function onPlaying(item) {
+        console.log('item is playing:', item);
+      }
+
+      var playlist = [
+        'http://dfcb.github.io/BigVideo.js/vids/river.mp4',
+        'http://dfcb.github.io/BigVideo.js/vids/dock.mp4',
+        'http://vjs.zencdn.net/v/oceans.mp4'
+      ];
+
       React.renderComponent(
-        <DriveIn show="http://vjs.zencdn.net/v/oceans.mp4" poster="http://placekitten.com/g/578/241" />,
+        <DriveIn
+          showPlaylist={playlist}
+          poster="http://placekitten.com/g/578/241"
+          onPlaying={onPlaying} />,
         document.getElementById('drive-in')
       );
 

@@ -48,7 +48,7 @@ module.exports = React.createClass({
         });
 
         if (this.props.onPlaying) {
-            this.props.onPlaying();
+            this.props.onPlaying(currentItem);
         }
     },
 
@@ -75,7 +75,7 @@ module.exports = React.createClass({
             playlist = DI.show(this.props.show, options);
         }
 
-        DI.on('media.playing', () => { this.setState({ playing: true }); });
+        DI.on('media.playing', (currentItem) => { this.setPlaying(currentItem); });
 
         this.setState({
             mute: this.props.mute,
@@ -108,7 +108,7 @@ module.exports = React.createClass({
         var content;
 
         if ('ontouchstart' in window) {
-            content = <img />;
+            content = <img height="1" width="1" />;
         } else {
             content = <video height="1" width="1" preload="auto" autoplay></video>;
         }
