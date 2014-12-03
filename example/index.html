@@ -11,7 +11,6 @@
   </head>
   <body>
     <div class="content">
-      <!-- <h1>React at the Drive-In!</h1> -->
       <h1>React at the Drive-In!</h1>
       <div class="car">
         <svg width="133" height="30" xmlns="http://www.w3.org/2000/svg">
@@ -34,16 +33,25 @@
       }
 
       var playlist = [
-        // 'http://i.imgur.com/ZUwhYzY.jpg'
-        ['http://dfcb.github.io/BigVideo.js/vids/river.mp4', 'http://i.imgur.com/ZUwhYzY.jpg'],
-        ['http://dfcb.github.io/BigVideo.js/vids/dock.mp4', 'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg'],
-        'http://vjs.zencdn.net/v/oceans.mp4'
+        [
+          'http://dfcb.github.io/BigVideo.js/vids/river.mp4',
+          'http://i.imgur.com/ZUwhYzY.jpg'
+        ],
+        [
+          'http://dfcb.github.io/BigVideo.js/vids/dock.mp4',
+          'http://i.kinja-img.com/gawker-media/image/upload/s--2JM2dUQx--/c_fit,fl_progressive,q_80,w_636/kwy4f4ctdr7qjykanyuc.jpg'
+        ],
+        [
+          'http://vjs.zencdn.net/v/oceans.mp4',
+          'https://c2.staticflickr.com/8/7063/6800673214_5f3b062c65_z.jpg'
+        ]
       ];
 
       React.renderComponent(
         <DriveIn
           showPlaylist={playlist}
           onPlaying={onPlaying}
+          slideshow={true}
           />,
         document.getElementById('drive-in')
       );
