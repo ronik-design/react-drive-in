@@ -75,6 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        duration: React.PropTypes.number,
 	        mute: React.PropTypes.bool,
 	        loop: React.PropTypes.bool,
+	        slideshow: React.PropTypes.bool,
 	        onPlaying: React.PropTypes.func
 	    },
 	
@@ -83,7 +84,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            className: 'drive-in',
 	            duration: 'auto',
 	            mute: true,
-	            loop: true
+	            loop: true,
+	            slideshow: false
 	        };
 	    },
 	
@@ -171,7 +173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    renderMedia:function() {
 	        var content;
 	
-	        if ('ontouchstart' in window) {
+	        if ('ontouchstart' in window || this.props.slideshow) {
 	            content = React.DOM.img(null);
 	        } else {
 	            content = React.DOM.video({height: "1", width: "1", preload: "auto", autoplay: true});
@@ -243,8 +245,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	function playlistItem(src) {
 	    var item = {},
 	        type,
-	        videoExts = { mp4: true, ogg: true, webm: true },
-	        imageExts = { jpg: true, png: true, gif: true };
+	        videoExts = {
+	            mp4: true,
+	            ogg: true,
+	            webm: true
+	        },
+	        imageExts = {
+	            jpg: true,
+	            png: true,
+	            gif: true
+	        };
 	
 	    var ext = src.match(/\.([mp4|ogg|webm|jpg|png|gif]+)$/)[1];
 	
@@ -261,22 +271,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return item;
 	}
 	
-	function makePlaylist(rawPlaylist) {
+	function makePlaylist(rawPlaylist, depth) {
+	    depth = depth || 0;
+	
 	    var playlist = [],
 	        item;
 	
 	    for (var i in rawPlaylist) {
 	        item = rawPlaylist[i];
 	        if (item.constructor === Object) {
-	            playlist.push([ item ]);
+	            playlist.push([item]);
 	        }
 	
 	        if (item.constructor === Array) {
-	            playlist.push(makePlaylist(item));
+	            playlist.push(makePlaylist(item, depth + 1));
 	        }
 	
 	        if (typeof item === 'string') {
-	            playlist.push([ playlistItem(item) ]);
+	            if (depth === 0) {
+	                playlist.push([playlistItem(item)]);
+	            } else {
+	                playlist.push(playlistItem(item));
+	            }
 	        }
 	    }
 	
@@ -293,6 +309,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    this.playlistLength = 0;
 	    this.currentItem = 0;
+	    this.itemDuration = 10;
 	}
 	
 	inherits(DriveIn, Jvent);
@@ -355,15 +372,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	
 	        } else {
-	            // is image
 	
-	            //         $('#big-video-image')
-	            //             .css({
-	            //                 width: 'auto',
-	            //                 height: containerH,
-	            //                 top: 0,
-	            //                 left: -(containerH * mediaAspect - containerW) / 2
-	            //             });
+	            // is image
+	            setStyles(mediaEl, {
+	                width: 'auto',
+	                height: containerH + 'px',
+	                top: '0px',
+	                left: (-(containerH * mediaAspect - containerW) / 2) + 'px'
+	            });
 	        }
 	
 	    } else {
@@ -384,32 +400,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	
 	        } else {
-	            // is image
 	
-	            //         $('#big-video-image')
-	            //             .css({
-	            //                 width: containerW,
-	            //                 height: 'auto',
-	            //                 top: -(containerW / mediaAspect - containerH) / 2,
-	            //                 left: 0
-	            //             });
+	            // is image
+	            setStyles(mediaEl, {
+	                width: containerW + 'px',
+	                height: 'auto',
+	                top: (-(containerW / mediaAspect - containerH) / 2) + 'px',
+	                left: '0px'
+	            });
 	        }
 	    }
 	};
 	
-	DriveIn.prototype._setMetadata = function(data) {
+	DriveIn.prototype._setVideoData = function(data) {
 	    var mediaEl = this.mediaEl;
 	    this.mediaAspect = mediaEl.videoWidth / mediaEl.videoHeight;
 	    this._updateSize();
+	
 	
 	    // var dur = Math.round(player.duration());
 	    // var durMinutes = Math.floor(dur/60);
 	    // var durSeconds = dur - durMinutes*60;
 	    // if (durSeconds < 10) durSeconds='0'+durSeconds;
 	    // vidDur = durMinutes+':'+durSeconds;
+	
 	};
 	
-	DriveIn.prototype._playItem = function(item) {
+	DriveIn.prototype._setImageData = function(data) {
+	    this.mediaAspect = data.naturalWidth / data.naturalHeight;
+	    this._updateSize();
+	};
+	
+	DriveIn.prototype._playVideoItem = function(item, itemNum) {
 	    var mediaEl = this.mediaEl,
 	        source,
 	        src,
@@ -433,7 +455,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        this.mediaEl.src = src;
 	
-	        if (!this.playlistLength < 2) {
+	        if (this.playlistLength < 2) {
 	            this.mediaEl.loop = true;
 	        }
 	
@@ -442,10 +464,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        this.mediaEl.play();
+	        this.currentItem = itemNum;
+	
+	    } else {
+	
+	        this.emit('media.error', new Error('No playable source'));
 	    }
 	};
 	
-	DriveIn.prototype.setVolume = function (level) {
+	DriveIn.prototype._playImageItem = function(item, itemNum) {
+	    var mediaEl = this.mediaEl,
+	        source,
+	        src,
+	        canPlay;
+	
+	    for (var i in item) {
+	        source = item[i];
+	        if (source.type.search(/^image/) === 0 && !src) {
+	            src = source.src;
+	        }
+	    }
+	
+	    if (src) {
+	
+	        this.mediaEl.src = src;
+	        this.currentItem = itemNum;
+	
+	    } else {
+	
+	        this.emit('media.error', new Error('No playable source'));
+	    }
+	};
+	
+	
+	DriveIn.prototype._playItem = function(item, itemNum) {
+	    if (this.currMediaType === 'video') {
+	        this._playVideoItem(item, itemNum);
+	    }
+	
+	    if (this.currMediaType === 'image') {
+	        this._playImageItem(item, itemNum);
+	    }
+	};
+	
+	DriveIn.prototype.setVolume = function(level) {
 	    if (level === 0) {
 	        this.mediaEl.muted = true;
 	        this.mediaEl.volume = 0;
@@ -458,37 +520,55 @@ return /******/ (function(modules) { // webpackBootstrap
 	DriveIn.prototype._loadPlaylist = function(playlist) {
 	    this.playlist = playlist;
 	    this.playlistLength = playlist.length;
-	    this._playItem(playlist[0]);
+	    this._playItem(playlist[0], 0);
 	};
 	
 	DriveIn.prototype._attachListeners = function() {
 	    var self = this;
 	
-	    window.onresize = function() {
-	        self._updateSize();
-	    };
+	    window.addEventListener('resize', function() {
+	        window.requestAnimationFrame(self._updateSize.bind(self));
+	    });
 	
 	    if (this.currMediaType === 'video') {
-	        this.mediaEl.onloadedmetadata = function(data) {
-	            self._setMetadata(data);
-	        };
 	
-	        this.mediaEl.onplaying = function() {
+	        this.mediaEl.addEventListener('loadedmetadata', function(data) {
+	            self._setVideoData(data);
+	        });
+	
+	        this.mediaEl.addEventListener('playing', function() {
 	            self.emit('media.playing', self.currentItem);
-	        };
+	        });
 	
-	        this.mediaEl.onended = function() {
+	        this.mediaEl.addEventListener('ended', function() {
 	            self.emit('media.ended', self.currentItem);
-	
 	            if (self.playlistLength > 1) {
-	                self.currentItem = (self.currentItem + 1 <= self.playlistList) ? self.currentItem + 1 : 0;
-	                self.play(self.currentItem);
+	                var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
+	                self.play(itemNum);
 	            }
-	        };
+	        });
 	    }
 	
 	    if (this.currMediaType === 'image') {
-	        // imagesloaded or something...
+	        this.mediaEl.addEventListener('load', function(e) {
+	
+	            if (self.playlistLength > 1) {
+	                setTimeout(function() {
+	                    self.mediaEl.dispatchEvent(new Event('ended'));
+	                }, self.itemDuration * 1000);
+	            }
+	
+	            self._setImageData(this);
+	            self.emit('media.playing', self.currentItem);
+	        });
+	
+	        this.mediaEl.addEventListener('ended', function() {
+	            self.emit('media.ended', self.currentItem);
+	            if (self.playlistLength > 1) {
+	                var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
+	                self.play(itemNum);
+	            }
+	        });
 	    }
 	};
 	
@@ -515,19 +595,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	 */
 	
-	DriveIn.prototype.show = function (item, options) {
+	DriveIn.prototype.show = function(item, options) {
 	    if (item.constructor === Array) {
-	        return this.showPlaylist([ item ], options);
+	        return this.showPlaylist([item], options);
 	    }
 	
 	    if (item.constructor === Object) {
-	        return this.showPlaylist([[ item ]], options);
+	        return this.showPlaylist([
+	            [item]
+	        ], options);
 	    }
 	
-	    return this.showPlaylist([[ playlistItem(item) ]], options);
+	    return this.showPlaylist([
+	        [playlistItem(item)]
+	    ], options);
 	};
 	
-	DriveIn.prototype.showPlaylist = function (rawPlaylist, options) {
+	DriveIn.prototype.showPlaylist = function(rawPlaylist, options) {
 	    if (options.hasOwnProperty('mute')) {
 	        this.mute = options.mute;
 	    }
@@ -547,15 +631,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.playlist[itemNum];
 	};
 	
-	DriveIn.prototype.play = function (itemNum) {
+	DriveIn.prototype.play = function(itemNum) {
 	    if (typeof itemNum === 'number') {
-	        this._playItem(this.playlist[itemNum]);
+	        this._playItem(this.playlist[itemNum], itemNum);
 	    } else {
 	        this.mediaEl.play();
 	    }
 	};
 	
-	DriveIn.prototype.pause = function () {
+	DriveIn.prototype.pause = function() {
 	    this.mediaEl.pause();
 	};
 	

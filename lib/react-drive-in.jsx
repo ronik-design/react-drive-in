@@ -11,6 +11,7 @@ module.exports = React.createClass({
         duration: React.PropTypes.number,
         mute: React.PropTypes.bool,
         loop: React.PropTypes.bool,
+        slideshow: React.PropTypes.bool,
         onPlaying: React.PropTypes.func
     },
 
@@ -19,7 +20,8 @@ module.exports = React.createClass({
             className: 'drive-in',
             duration: 'auto',
             mute: true,
-            loop: true
+            loop: true,
+            slideshow: false
         };
     },
 
@@ -107,8 +109,8 @@ module.exports = React.createClass({
     renderMedia() {
         var content;
 
-        if ('ontouchstart' in window) {
-            content = <img height="1" width="1" />;
+        if ('ontouchstart' in window || this.props.slideshow) {
+            content = <img />;
         } else {
             content = <video height="1" width="1" preload="auto" autoplay></video>;
         }
