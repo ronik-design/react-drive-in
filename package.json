@@ -51,5 +51,8 @@
     "dependencies": {
         "inherits": "^2.0.1",
         "jvent": "^0.2.0"
+    },
+    "browser": {
+        "inherits": "./node_modules/inherits/inherits_browser.js"
     }
 }

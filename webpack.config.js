@@ -31,7 +31,8 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['', '.js', '.jsx'],
+        packageAlias: 'browser'
     },
     plugins: [
         new Webpack.DefinePlugin({
