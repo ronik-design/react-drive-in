@@ -79,8 +79,8 @@ Gulp.task('bundle', Shell.task([
     'gulp webpack',
     'gulp webpack -p',
     'gulp css',
-    'gulp css -p',
-    'gulp deploy'
+    'gulp css -p'
+    // 'gulp deploy'
 ]));
 
 Gulp.task('default', ['css', 'webpack', 'server', 'watch']);
