@@ -76,7 +76,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        mute: React.PropTypes.bool,
 	        loop: React.PropTypes.bool,
 	        slideshow: React.PropTypes.bool,
-	        onPlaying: React.PropTypes.func
+	        onPlaying: React.PropTypes.func,
+	        onPause: React.PropTypes.func
 	    },
 	
 	    getDefaultProps:function() {
@@ -85,7 +86,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            duration: 'auto',
 	            mute: true,
 	            loop: true,
-	            slideshow: false
+	            slideshow: false,
+	            volume: 0.5
 	        };
 	    },
 	
@@ -118,6 +120,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 	
+	    setPause:function() {
+	        this.setState({ playing: false });
+	        if (this.props.onPause) {
+	            this.props.onPause();
+	        }
+	    },
+	
 	    componentWillMount:function() {
 	        this.DI = new DriveIn();
 	    },
@@ -132,7 +141,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        options = {
 	            mute: this.props.mute,
 	            duration: this.props.duration,
-	            loop: this.props.loop
+	            loop: this.props.loop,
+	            poster: this.props.poster
 	        };
 	
 	        if (this.props.showPlaylist) {
@@ -142,6 +152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        DI.on('media.playing', function(currentItem)  { this.setPlaying(currentItem); }.bind(this));
+	        DI.on('media.pause', function(currentItem)  { this.setPause(); }.bind(this));
 	
 	        this.setState({
 	            mute: this.props.mute,
@@ -151,7 +162,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    componentWillUnmount:function() {
+	        this.DI.removeAllListeners();
 	        this.DI.close();
+	        delete(this.DI);
 	    },
 	
 	    play:function(itemNum) {
@@ -167,7 +180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 	
 	    unmute:function() {
-	        this.DI.setVolume(0.5);
+	        this.DI.setVolume(this.props.volume);
 	    },
 	
 	    renderMedia:function() {
@@ -231,43 +244,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function windowWidth() {
-	  if (self.innerHeight) {
-	    return self.innerWidth;
-	  }
+	    if (self.innerHeight) {
+	        return self.innerWidth;
+	    }
 	
-	  if (document.documentElement && document.documentElement.clientHeight) {
-	    return document.documentElement.clientWidth;
-	  }
+	    if (document.documentElement && document.documentElement.clientHeight) {
+	        return document.documentElement.clientWidth;
+	    }
 	
-	  if (document.body) {
-	    return document.body.clientWidth;
-	  }
+	    if (document.body) {
+	        return document.body.clientWidth;
+	    }
 	}
 	
 	function windowHeight() {
-	  if (self.innerHeight) {
-	    return self.innerHeight;
-	  }
+	    if (self.innerHeight) {
+	        return self.innerHeight;
+	    }
 	
-	  if (document.documentElement && document.documentElement.clientHeight) {
-	    return document.documentElement.clientHeight;
-	  }
+	    if (document.documentElement && document.documentElement.clientHeight) {
+	        return document.documentElement.clientHeight;
+	    }
 	
-	  if (document.body) {
-	    return document.body.clientHeight;
-	  }
+	    if (document.body) {
+	        return document.body.clientHeight;
+	    }
 	}
 	
 	function setStyles(el, props) {
 	    var cssString = '';
-	
 	    for (var p in props) {
 	        cssString += p + ':' + props[p] + ';';
-	        // el.style[p] = props[p];
 	    }
-	
-	    // console.log(cssString);
-	
 	    el.style.cssText += ';' + cssString;
 	}
 	
@@ -276,7 +284,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        type,
 	        videoExts = {
 	            mp4: true,
-	            ogg: true,
+	            ogv: true,
 	            webm: true
 	        },
 	        imageExts = {
@@ -285,14 +293,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gif: true
 	        };
 	
-	    var ext = src.match(/\.([mp4|ogg|webm|jpg|png|gif]+)$/)[1];
+	    var ext = src.match(/\.([mp4|ogv|webm|jpg|jpeg|png|gif]+)$/)[1];
 	
 	    if (videoExts[ext]) {
-	        item.type = 'video/' + ext;
+	        if (ext === 'ogv') {
+	            item.type = 'video/ogg';
+	        } else {
+	            item.type = 'video/' + ext;
+	        }
 	    }
 	
 	    if (imageExts[ext]) {
-	        item.type = 'image/' + ext;
+	        if (ext === 'jpg') {
+	            item.type = 'image/jpeg';
+	        } else {
+	            item.type = 'image/' + ext;
+	        }
 	    }
 	
 	    item.src = src;
@@ -328,7 +344,67 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return playlist;
 	}
 	
+	function findPoster(playlist) {
+	    var poster,
+	        item;
+	
+	    for (var i in playlist) {
+	        item = playlist[i];
+	
+	        if (item.constructor === Array) {
+	            poster = findPoster(item);
+	        } else {
+	            if (item.type.search(/^image/) > -1) {
+	                return item;
+	            }
+	        }
+	
+	        if (poster) {
+	            return poster;
+	        }
+	    }
+	}
+	
+	function createEl(name, props) {
+	    var el = document.createElement(name);
+	    for (var prop in props) {
+	        el[prop] = props[prop];
+	    }
+	    return el;
+	}
+	
+	function Timer(callback, delay) {
+	    var self = this;
+	    var timerId, start, remaining = delay;
+	
+	    this.pause = function(silent) {
+	        window.clearTimeout(timerId);
+	        remaining -= new Date() - start;
+	
+	        if (!silent) this.emit('pause');
+	    };
+	
+	    this.resume = function(silent) {
+	        start = new Date();
+	        window.clearTimeout(timerId);
+	        timerId = window.setTimeout(callback, remaining);
+	
+	        if (!silent) this.emit('resume');
+	    };
+	
+	    this.destroy = function() {
+	        self.pause(true);
+	        self.removeAllListeners();
+	    };
+	
+	    this.resume();
+	}
+	
+	inherits(Timer, Jvent);
+	
 	function DriveIn() {
+	    this._listeners = [];
+	
 	    this.parentEl = null;
 	    this.mediaEl = null;
 	    this.mute = true;
@@ -338,25 +414,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    this.playlistLength = 0;
 	    this.currentItem = 0;
-	    this.itemDuration = 10;
+	    this.slideshowItemDuration = 10;
+	    this._slideshowTimer = null;
+	
+	    this.poster = null;
 	}
 	
 	inherits(DriveIn, Jvent);
-	
-	DriveIn.prototype.init = function(options) {
-	    var self = this,
-	        media;
-	
-	    this.parentEl = options.el;
-	    setStyles(this.parentEl, {
-	        display: 'block'
-	    });
-	
-	    media = getMedia(this.parentEl);
-	
-	    this._setMedia(media);
-	    this._attachListeners();
-	};
 	
 	DriveIn.prototype._updateSize = function() {
 	
@@ -397,13 +461,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	
 	            setStyles(parentEl, {
-	                top: 0,
-	                left: (-(containerH*mediaAspect-containerW)/2) + 'px',
 	                height: containerH + 'px'
 	            });
 	
 	            setStyles(mediaEl, {
-	                width: (containerH*mediaAspect) + 'px',
+	                width: (containerH * mediaAspect) + 'px',
 	                height: containerH + 'px'
 	            });
 	
@@ -412,9 +474,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // is image
 	            setStyles(mediaEl, {
 	                width: 'auto',
-	                height: containerH + 'px',
-	                top: '0px',
-	                left: (-(containerH * mediaAspect - containerW) / 2) + 'px'
+	                height: containerH + 'px'
+	                    // top: '0px',
+	                    // left: (-(containerH * mediaAspect - containerW) / 2) + 'px'
 	            });
 	        }
 	
@@ -425,13 +487,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            setStyles(parentEl, {
 	                width: containerW + 'px',
-	                height: (containerW/mediaAspect) + 'px'
+	                height: (containerW / mediaAspect) + 'px'
 	            });
 	
 	            setStyles(parentEl, {
-	                top: (-(containerW/mediaAspect-containerH)/2) + 'px',
-	                left: 0,
-	                height: (containerW/mediaAspect) + 'px'
+	                height: (containerW / mediaAspect) + 'px'
 	            });
 	
 	            setStyles(mediaEl, {
@@ -444,9 +504,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            // is image
 	            setStyles(mediaEl, {
 	                width: containerW + 'px',
-	                height: 'auto',
-	                top: (-(containerW / mediaAspect - containerH) / 2) + 'px',
-	                left: '0px'
+	                height: 'auto'
+	                    // top: (-(containerW / mediaAspect - containerH) / 2) + 'px',
+	                    // left: '0px'
 	            });
 	        }
 	    }
@@ -475,14 +535,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var mediaEl = this.mediaEl,
 	        source,
 	        src,
-	        canPlay;
+	        canPlayType;
 	
 	    for (var i in item) {
 	        source = item[i];
-	        canPlay = mediaEl.canPlayType(source.type);
-	        if (canPlay === 'probably') {
+	        canPlayType = mediaEl.canPlayType(source.type);
+	        if (canPlayType === 'probably') {
 	            src = source.src;
-	        } else if (canPlay && !src) {
+	        } else if (canPlayType && !src) {
 	            src = source.src;
 	        }
 	    }
@@ -491,16 +551,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        this.mediaEl.src = src;
 	
-	        if (this.playlistLength < 2) {
-	            this.mediaEl.loop = true;
-	        }
+	        if (this.playlistLength < 2) this.mediaEl.loop = true;
+	        if (this.mute) this.setVolume(0);
 	
-	        if (this.mute) {
-	            this.setVolume(0);
-	        }
-	
-	        this.mediaEl.play();
 	        this.currentItem = itemNum;
+	
+	        this.mediaEl.load();
 	
 	    } else {
 	
@@ -521,6 +577,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	
+	    if (!src && this.poster) {
+	        src = this.poster.src;
+	    }
+	
 	    if (src) {
 	
 	        this.mediaEl.src = src;
@@ -532,7 +592,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	
 	DriveIn.prototype._playItem = function(item, itemNum) {
 	    if (this.currMediaType === 'video') {
 	        this._playVideoItem(item, itemNum);
@@ -543,107 +602,171 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 	
-	DriveIn.prototype.setVolume = function(level) {
-	    if (level === 0) {
-	        this.mediaEl.muted = true;
-	        this.mediaEl.volume = 0;
-	    } else {
-	        this.mediaEl.muted = false;
-	        this.mediaEl.volume = level;
-	    }
-	};
-	
 	DriveIn.prototype._loadPlaylist = function(playlist) {
 	    this.playlist = playlist;
 	    this.playlistLength = playlist.length;
 	    this._playItem(playlist[0], 0);
 	};
 	
+	DriveIn.prototype._addListener = function(element, event, handler) {
+	
+	    element.addEventListener(event, handler);
+	
+	    this._listeners.push({
+	        element: element,
+	        event: event,
+	        handler: handler
+	    });
+	};
+	
+	DriveIn.prototype._removeAllListeners = function() {
+	    var listeners = this._listeners,
+	        listen;
+	
+	    for (var i in listeners) {
+	        listen = listeners[i];
+	        listen.element.removeEventListener(listen.event, listen.handler);
+	    }
+	};
+	
+	DriveIn.prototype._attachVideoListeners = function() {
+	    var self = this,
+	        mediaEl = this.mediaEl;
+	
+	    function onLoadedMetadata(data) {
+	        self._setVideoData(data);
+	    }
+	
+	    function onPlaying() {
+	        self.emit('media.playing', self.currentItem);
+	    }
+	
+	    function onPause() {
+	        self.emit('media.pause');
+	    }
+	
+	    function onEnded() {
+	        self.emit('media.ended', self.currentItem);
+	
+	        if (self.playlistLength > 1) {
+	            var itemNum = 0;
+	            if (self.currentItem + 1 < self.playlistLength) {
+	                itemNum = self.currentItem + 1;
+	            }
+	            self.play(itemNum);
+	        }
+	    }
+	
+	    function onCanPlay() {
+	        mediaEl.play();
+	    }
+	
+	    this._addListener(mediaEl, 'loadedmetadata', onLoadedMetadata);
+	    this._addListener(mediaEl, 'playing', onPlaying);
+	    this._addListener(mediaEl, 'pause', onPause);
+	    this._addListener(mediaEl, 'ended', onEnded);
+	    this._addListener(mediaEl, 'canplay', onCanPlay);
+	};
+	
+	DriveIn.prototype._attachImageListeners = function() {
+	    var self = this,
+	        mediaEl = this.mediaEl;
+	
+	    function ended() {
+	        var event = new Event('ended');
+	        self.mediaEl.dispatchEvent(event);
+	    }
+	
+	    function onPause() {
+	        self.emit('media.pause');
+	    }
+	
+	    function onLoad(data) {
+	        if (self.playlistLength > 1) {
+	            if (self._slideshowTimer) self._slideshowTimer.destroy();
+	            self._slideshowTimer = new Timer(ended, self.slideshowItemDuration * 1000);
+	
+	            self._slideshowTimer.on('pause', onPause);
+	        }
+	
+	        self._setImageData(this);
+	        self.emit('media.playing', self.currentItem);
+	    }
+	
+	    function onEnded() {
+	        self.emit('media.ended', self.currentItem);
+	        if (self.playlistLength > 1) {
+	            var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
+	            self.play(itemNum);
+	        }
+	    }
+	
+	    this._addListener(mediaEl, 'load', onLoad);
+	    this._addListener(mediaEl, 'ended', onEnded);
+	};
+	
 	DriveIn.prototype._attachListeners = function() {
 	    var self = this;
 	
-	    window.addEventListener('resize', function() {
+	    function onResize() {
 	        window.requestAnimationFrame(self._updateSize.bind(self));
-	    });
+	    }
+	
+	    this._addListener(window, 'resize', onResize);
 	
 	    if (this.currMediaType === 'video') {
-	
-	        this.mediaEl.addEventListener('loadedmetadata', function(data) {
-	            self._setVideoData(data);
-	        });
-	
-	        this.mediaEl.addEventListener('playing', function() {
-	            self.emit('media.playing', self.currentItem);
-	        });
-	
-	        this.mediaEl.addEventListener('ended', function() {
-	            self.emit('media.ended', self.currentItem);
-	            if (self.playlistLength > 1) {
-	                var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
-	                self.play(itemNum);
-	            }
-	        });
+	        this._attachVideoListeners();
+	    } else {
+	        this._attachImageListeners();
 	    }
+	};
 	
-	    if (this.currMediaType === 'image') {
-	        this.mediaEl.addEventListener('load', function(e) {
+	DriveIn.prototype._setParent = function(el) {
+	    this.parentEl = el;
 	
-	            if (self.playlistLength > 1) {
-	                setTimeout(function() {
-	                    self.mediaEl.dispatchEvent(new Event('ended'));
-	                }, self.itemDuration * 1000);
-	            }
+	    setStyles(this.parentEl, {
+	        position: 'absolute',
+	        display: 'block',
+	        transform: 'translate3d(-50%,-50%,0)',
+	        '-webkit-transform': 'translate3d(-50%,-50%,0)',
+	        left: '50%',
+	        top: '50%'
+	    });
 	
-	            self._setImageData(this);
-	            self.emit('media.playing', self.currentItem);
-	        });
-	
-	        this.mediaEl.addEventListener('ended', function() {
-	            self.emit('media.ended', self.currentItem);
-	            if (self.playlistLength > 1) {
-	                var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
-	                self.play(itemNum);
-	            }
-	        });
-	    }
+	    return this.parentEl;
 	};
 	
 	DriveIn.prototype._setMedia = function(media) {
-	    var self = this;
-	
 	    this.mediaEl = media.el;
 	    setStyles(this.mediaEl, {
-	        position: 'absolute'
+	        display: 'block'
 	    });
 	
 	    this.currMediaType = media.type;
+	
+	    return this.mediaEl;
 	};
 	
-	/**
+	DriveIn.prototype.init = function(options) {
+	    var parentEl = this._setParent(options.el);
+	    var media = getMedia(parentEl);
+	    this._setMedia(media);
+	    this._attachListeners();
+	};
 	
-	    show='foo.mp4' // simple
-	    show=[ 'foo.mp4', 'foo.webm' ] // simple playlist
-	    show=[ {}, {} ] // fallback
-	    show=[ [ {}, {} ] ] // playlist with fallback
-	
-	    inputs: String-src,
-	    canonical: [ [{ type, src }, { type, src }, {}], [{}, {}, {}], [] ]
-	
-	 */
-	
-	DriveIn.prototype.show = function(item, options) {
-	    if (item.constructor === Array) {
-	        return this.showPlaylist([item], options);
+	DriveIn.prototype.show = function(rawItem, options) {
+	    if (rawItem.constructor === Array) {
+	        return this.showPlaylist([rawItem], options);
 	    }
 	
-	    if (item.constructor === Object) {
+	    if (rawItem.constructor === Object) {
 	        return this.showPlaylist([
-	            [item]
+	            [rawItem]
 	        ], options);
 	    }
 	
 	    return this.showPlaylist([
-	        [playlistItem(item)]
+	        [playlistItem(rawItem)]
 	    ], options);
 	};
 	
@@ -652,7 +775,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.mute = options.mute;
 	    }
 	    var playlist = makePlaylist(rawPlaylist);
+	
+	    if (options.poster) {
+	        this.poster = options.poster;
+	    } else {
+	        this.poster = findPoster(playlist);
+	    }
+	
 	    this._loadPlaylist(playlist);
+	};
+	
+	DriveIn.prototype.setVolume = function(level) {
+	
+	    if (this.currMediaType === 'image') {
+	        return;
+	    }
+	
+	    if (level === 0) {
+	        this.mediaEl.muted = true;
+	        this.mediaEl.volume = 0;
+	    } else {
+	        this.mediaEl.muted = false;
+	        this.mediaEl.volume = level;
+	    }
 	};
 	
 	DriveIn.prototype.getMedia = function() {
@@ -671,16 +816,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof itemNum === 'number') {
 	        this._playItem(this.playlist[itemNum], itemNum);
 	    } else {
-	        this.mediaEl.play();
+	        if (this.currMediaType === 'video') {
+	            this.mediaEl.play()
+	        } else {
+	            if (this._slideshowTimer) {
+	                this._slideshowTimer.resume();
+	            }
+	        }
 	    }
 	};
 	
 	DriveIn.prototype.pause = function() {
-	    this.mediaEl.pause();
+	    if (this.currMediaType === 'video') {
+	        this.mediaEl.pause()
+	    } else {
+	        if (this._slideshowTimer) {
+	            this._slideshowTimer.pause();
+	        }
+	    }
 	};
 	
 	DriveIn.prototype.close = function() {
-	
+	    this._removeAllListeners();
+	    if (this._slideshowTimer) {
+	        this._slideshowTimer.destroy();
+	        delete this._slideshowTimer;
+	    }
 	};
 	
 	module.exports = DriveIn;

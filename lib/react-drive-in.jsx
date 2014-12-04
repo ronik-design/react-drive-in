@@ -12,7 +12,8 @@ module.exports = React.createClass({
         mute: React.PropTypes.bool,
         loop: React.PropTypes.bool,
         slideshow: React.PropTypes.bool,
-        onPlaying: React.PropTypes.func
+        onPlaying: React.PropTypes.func,
+        onPause: React.PropTypes.func
     },
 
     getDefaultProps() {
@@ -21,7 +22,8 @@ module.exports = React.createClass({
             duration: 'auto',
             mute: true,
             loop: true,
-            slideshow: false
+            slideshow: false,
+            volume: 0.5
         };
     },
 
@@ -54,6 +56,13 @@ module.exports = React.createClass({
         }
     },
 
+    setPause() {
+        this.setState({ playing: false });
+        if (this.props.onPause) {
+            this.props.onPause();
+        }
+    },
+
     componentWillMount() {
         this.DI = new DriveIn();
     },
@@ -68,7 +77,8 @@ module.exports = React.createClass({
         options = {
             mute: this.props.mute,
             duration: this.props.duration,
-            loop: this.props.loop
+            loop: this.props.loop,
+            poster: this.props.poster
         };
 
         if (this.props.showPlaylist) {
@@ -78,6 +88,7 @@ module.exports = React.createClass({
         }
 
         DI.on('media.playing', (currentItem) => { this.setPlaying(currentItem); });
+        DI.on('media.pause', (currentItem) => { this.setPause(); });
 
         this.setState({
             mute: this.props.mute,
@@ -87,7 +98,9 @@ module.exports = React.createClass({
     },
 
     componentWillUnmount() {
+        this.DI.removeAllListeners();
         this.DI.close();
+        delete(this.DI);
     },
 
     play(itemNum) {
@@ -103,7 +116,7 @@ module.exports = React.createClass({
     },
 
     unmute() {
-        this.DI.setVolume(0.5);
+        this.DI.setVolume(this.props.volume);
     },
 
     renderMedia() {
