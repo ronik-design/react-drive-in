@@ -413,6 +413,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.currMediaType = null;
 	    this.mediaAspect = 16 / 9;
 	    this.playlist = null;
+	    this.loop = true;
 	
 	    this.playlistLength = 0;
 	    this.currentItem = 0;
@@ -650,7 +651,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function onEnded() {
 	        self.emit('media.ended', self.currentItem);
 	
-	        if (self.playlistLength > 1) {
+	        if (self.playlistLength > 1 && self.loop) {
 	            var itemNum = 0;
 	            if (self.currentItem + 1 < self.playlistLength) {
 	                itemNum = self.currentItem + 1;
@@ -697,7 +698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    function onEnded() {
 	        self.emit('media.ended', self.currentItem);
-	        if (self.playlistLength > 1) {
+	        if (self.playlistLength > 1 && self.loop) {
 	            var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
 	            self.play(itemNum);
 	        }
@@ -775,6 +776,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	DriveIn.prototype.showPlaylist = function(rawPlaylist, options) {
 	    if (options.hasOwnProperty('mute')) {
 	        this.mute = options.mute;
+	    }
+	    if (options.hasOwnProperty('loop')) {
+	        this.loop = options.loop;
 	    }
 	    var playlist = makePlaylist(rawPlaylist);
 	
