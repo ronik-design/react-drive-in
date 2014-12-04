@@ -2,7 +2,7 @@
 
 ![Git release](http://img.shields.io/github/release/ronik-design/react-drive-in.svg?style=flat)
 
-A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. 
+A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 3.5k minified and gzipped.
 
 ## Install
 
@@ -11,7 +11,7 @@ So easy. React is the only dependency:
 
 - Using NPM
 ```bash
-  $ npm install --save react-drive-in
+  $ npm install --save ronik-design/react-drive-in
 ```
 
 - [Download the latest release](https://github.com/ronik-design/react-drive-in/archive/v1.0.0.zip)
@@ -69,6 +69,13 @@ So easy. React is the only dependency:
   );
 ```
 
+## What to `show`
+
+The show and showPlaylist properties have many options. See [example/index.html](example/index.html) for an fairly complex set up.
+
+- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ 'video.mp4', 'video.ogv', 'video.jpg' ]). 
+- `showPlaylist` is for MULTIPLE ITEMS. You can provide either an array or strings (e.g., [ 'video1.mp4', 'video2.mp4' ]) or an array of fallback arrays (e.g., [ [ 'video1.mp4', 'video1.ogv' ], [ 'video2.mp4', 'video2.ogv' ])
+
 ## Details
 
 The HTML structure of this element looks like:
@@ -88,7 +95,7 @@ The component falls back to using an image on touch devices, since many will not
 ## Formats
 
 The component currently understands and supports, `mp4`, `ogv`, `webm`, `jpg`, `gif`, `png`.
-  
+
 ## Component API
 
 `<Video>` component:
@@ -117,3 +124,10 @@ This will install all dev dependencies and launch browser sync in Chrome.
 ## License
 
 See the [License](LICENSE) file.
+
+## Credit
+
+- The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10)
+- [BigVideo.js](http://dfcb.github.io/BigVideo.jj/) was the inspiration, and the source of some hotlinked video clips.
+- [react-video](https://github.com/pedronauck/react-video) provided a great project scaffold for a React component.
+
