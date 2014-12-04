@@ -131,7 +131,7 @@ module.exports = React.createClass({
         }
 
         return (
-            <div ref="media" id="drive-in-media">
+            <div ref="media" className="drive-in-media">
                 {content}
             </div>
         );

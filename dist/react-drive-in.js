@@ -195,7 +195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        return (
-	            React.DOM.div({ref: "media", id: "drive-in-media"}, 
+	            React.DOM.div({ref: "media", className: "drive-in-media"}, 
 	                content
 	            )
 	        );
