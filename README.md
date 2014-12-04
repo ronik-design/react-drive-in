@@ -11,7 +11,7 @@ So easy. React is the only dependency:
 
 - Using NPM
 ```bash
-  $ npm install --save react-drive-in
+  $ npm install --save ronik-design/react-drive-in
 ```
 
 - [Download the latest release](https://github.com/ronik-design/react-drive-in/archive/v1.0.0.zip)
