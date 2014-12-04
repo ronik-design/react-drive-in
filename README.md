@@ -2,7 +2,7 @@
 
 ![Git release](http://img.shields.io/github/release/ronik-design/react-drive-in.svg?style=flat)
 
-A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. 
+A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only X.Xk minified and gzipped.
 
 ## Install
 
