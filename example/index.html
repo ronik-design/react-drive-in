@@ -14,9 +14,9 @@
         }
         .content {
             position: relative;
-            top: 65%;
-            transform: translateY(-65%);
-            -webkit-transform: translateY(-65%);
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
             text-align: center;
         }
         h1 {
@@ -33,26 +33,41 @@
             top: 75px;
             left: 10px;
         }
+
+        button {
+            width: 70px;
+            height: 70px;
+            background-color:#000;
+            border: 1px solid #000;
+            color: #fff;
+            border-radius: 35px;
+            margin: .5em;
+        }
+        button:focus {
+            outline: 0;
+        }
+        .buttons {
+            padding: .2em;
+        }
     </style>
   </head>
   <body>
     <div class="content">
-      <div class="mode-select">
-        <button onClick="modeSelect('video');">Video</button>
-        <button onClick="modeSelect('slideshow');">Slideshow</button>
+      <div class="mode-select buttons">
+        <button onClick="modeSelect('video');">Videos</button>
+        <button onClick="modeSelect('slideshow');">Images</button>
       </div>
 
-      <div class="item-select">
+      <div class="item-select buttons">
         <button onClick="itemSelect(1);">Item #1</button>
         <button onClick="itemSelect(2);">Item #2</button>
         <button onClick="itemSelect(3);">Item #3</button>
       </div>
 
-      <div class="play-toggle">
+      <div class="play-toggle buttons">
         <button onClick="playToggle();">Play / Pause</button>
       </div>
 
-      <h1>React at the Drive-In!</h1>
       <div class="car">
         <svg width="145" height="35" xmlns="http://www.w3.org/2000/svg">
           <rect width="145" height="35"/>
