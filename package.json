@@ -39,7 +39,11 @@
         "webpack": "^1.4.4",
         "yargs": "^1.3.2"
     },
-    "author": "Ronik Design",
+    "author": {
+        "name": "Ronik Design",
+        "email": "contact@ronikdesign.com",
+        "url": "http://www.ronikdesign.com"
+    },
     "licenses": [{
         "type": "ISC",
         "url": "http://github.com/ronik-design/react-drive-in/raw/master/LICENSE"
