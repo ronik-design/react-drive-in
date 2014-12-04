@@ -69,6 +69,13 @@ So easy. React is the only dependency:
   );
 ```
 
+## What to `show`
+
+The show and showPlaylist properties have many options. See [example/index.html](example/index.html) for an fairly complex set up.
+
+- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ 'video.mp4', 'video.ogv', 'video.jpg' ]). 
+- `showPlaylist` is for MULTIPLE ITEMS. You can provide either an array or strings (e.g., [ 'video1.mp4', 'video2.mp4' ]) or an array of fallback arrays (e.g., [ [ 'video1.mp4', 'video1.ogv' ], [ 'video2.mp4', 'video2.ogv' ])
+
 ## Details
 
 The HTML structure of this element looks like:
@@ -88,7 +95,7 @@ The component falls back to using an image on touch devices, since many will not
 ## Formats
 
 The component currently understands and supports, `mp4`, `ogv`, `webm`, `jpg`, `gif`, `png`.
-  
+
 ## Component API
 
 `<Video>` component:
