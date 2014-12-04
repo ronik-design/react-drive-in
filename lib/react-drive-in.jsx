@@ -113,10 +113,12 @@ module.exports = React.createClass({
 
     mute() {
         this.DI.setVolume(0);
+        this.state.mute = true;
     },
 
     unmute() {
         this.DI.setVolume(this.props.volume);
+        this.state.mute = false;
     },
 
     renderMedia() {

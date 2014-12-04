@@ -177,10 +177,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    mute:function() {
 	        this.DI.setVolume(0);
+	        this.state.mute = true;
 	    },
 	
 	    unmute:function() {
 	        this.DI.setVolume(this.props.volume);
+	        this.state.mute = false;
 	    },
 	
 	    renderMedia:function() {
@@ -786,15 +788,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	DriveIn.prototype.setVolume = function(level) {
-	
 	    if (this.currMediaType === 'image') {
 	        return;
 	    }
 	
 	    if (level === 0) {
+	        this.mute = true;
 	        this.mediaEl.muted = true;
 	        this.mediaEl.volume = 0;
 	    } else {
+	        this.mute = false;
 	        this.mediaEl.muted = false;
 	        this.mediaEl.volume = level;
 	    }
