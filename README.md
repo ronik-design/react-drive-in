@@ -117,3 +117,10 @@ This will install all dev dependencies and launch browser sync in Chrome.
 ## License
 
 See the [License](LICENSE) file.
+
+## Credit
+
+- The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10)
+- [BigVideo.js](http://dfcb.github.io/BigVideo.jj/) was the inspiration, and the source of some hotlinked video clips.
+- [react-video](https://github.com/pedronauck/react-video) provided a great project scaffold for a React component.
+
