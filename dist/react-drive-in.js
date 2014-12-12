@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.0.0
+ * @version v1.0.1
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
@@ -191,7 +191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if ('ontouchstart' in window || this.props.slideshow) {
 	            content = React.DOM.img(null);
 	        } else {
-	            content = React.DOM.video({height: "1", width: "1", preload: "auto", autoplay: true});
+	            content = React.DOM.video({height: "1", width: "1", preload: "auto"});
 	        }
 
 	        return (
@@ -768,9 +768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        ], options);
 	    }
 
-	    return this.showPlaylist([
-	        [playlistItem(rawItem)]
-	    ], options);
+	    return this.showPlaylist([playlistItem(rawItem)], options);
 	};
 
 	DriveIn.prototype.showPlaylist = function(rawPlaylist, options) {
