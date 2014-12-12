@@ -127,7 +127,7 @@ module.exports = React.createClass({
         if ('ontouchstart' in window || this.props.slideshow) {
             content = <img />;
         } else {
-            content = <video height="1" width="1" preload="auto" autoplay></video>;
+            content = <video height="1" width="1" preload="auto"></video>;
         }
 
         return (
