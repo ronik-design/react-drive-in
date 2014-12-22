@@ -1,5 +1,5 @@
-var React = require('react');
-var DriveIn = require('./drive-in');
+var React = require('react'),
+    DriveIn = require('drive-in');
 
 module.exports = React.createClass({
     displayName: 'DriveIn',

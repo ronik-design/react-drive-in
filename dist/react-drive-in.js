@@ -62,8 +62,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var React = __webpack_require__(1);
-	var DriveIn = __webpack_require__(2);
+	/** @jsx React.DOM */var React = __webpack_require__(1),
+	    DriveIn = __webpack_require__(2);
 
 	module.exports = React.createClass({
 	    displayName: 'DriveIn',
@@ -167,7 +167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        DI.on('media.playing', function(currentItem)  { this.setPlaying(currentItem); }.bind(this));
-	        DI.on('media.pause', function(currentItem)  { this.setPause(); }.bind(this));
+	        DI.on('media.pause', function()  { this.setPause(); }.bind(this));
 	        DI.on('media.loading', function()  { this.setLoading(); }.bind(this));
 	        DI.on('media.canplay', function()  { this.setCanPlay(); }.bind(this));
 
@@ -241,8 +241,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(3);
-	var inherits = __webpack_require__(4);
+	/** @jsx React.DOM */module.exports = __webpack_require__(3);
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */var Jvent = __webpack_require__(4);
+	var inherits = __webpack_require__(5);
 
 	function windowWidth() {
 	    if (self.innerHeight) {
@@ -282,7 +289,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function playlistItem(src) {
 	    var item = {},
-	        type,
 	        videoExts = {
 	            mp4: true,
 	            ogv: true,
@@ -393,7 +399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!silent) this.emit('resume');
 	    };
 
-	    this.currentTime = function(time) {
+	    this.currentTime = function() {
 	        var currTime = new Date() - start;
 	        if (timerId) {
 	            this.pause(true);
@@ -516,18 +522,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	DriveIn.prototype._setVideoData = function(data) {
+	DriveIn.prototype._setVideoData = function() {
 	    var mediaEl = this.mediaEl;
 	    this.mediaAspect = mediaEl.videoWidth / mediaEl.videoHeight;
 	    this._updateSize();
-
-
-	    // var dur = Math.round(player.duration());
-	    // var durMinutes = Math.floor(dur/60);
-	    // var durSeconds = dur - durMinutes*60;
-	    // if (durSeconds < 10) durSeconds='0'+durSeconds;
-	    // vidDur = durMinutes+':'+durSeconds;
-
 	};
 
 	DriveIn.prototype._setImageData = function(data) {
@@ -585,10 +583,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype._playImageItem = function(item, itemNum) {
-	    var mediaEl = this.mediaEl,
-	        source,
-	        src,
-	        canPlay;
+	    var source,
+	        src;
 
 	    for (var i in item) {
 	        source = item[i];
@@ -678,7 +674,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        if (ready > 0) {
-	            var start = buffered.start(0);
 	            var end = buffered.end(0);
 	            percent = (end/total) * 100;
 	        }
@@ -729,7 +724,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        self.emit('media.pause');
 	    }
 
-	    function onLoad(data) {
+	    function onLoad() {
+	        self.emit('media.canplay');
 	        if (self.playlistLength > 1) {
 	            if (self._slideshowTimer) self._slideshowTimer.destroy();
 	            self._slideshowTimer = new Timer(ended, self.slideshowItemDuration * 1000);
@@ -784,17 +780,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.parentEl;
 	};
 
-	// DriveIn.prototype._setMedia = function(media) {
-	//     this.mediaEl = media.el;
-	//     setStyles(this.mediaEl, {
-	//         display: 'block'
-	//     });
-
-	//     this.currMediaType = media.type;
-
-	//     return this.mediaEl;
-	// };
-
 	DriveIn.prototype.cleanup = function() {
 	    var el = this.parentEl;
 	    while (el.firstChild) {
@@ -833,12 +818,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	DriveIn.prototype.init = function(options) {
 	    options = options || {};
 
-	    var parentEl = this._setParent(options.el);
-
 	    if ('ontouchstart' in window || options.slideshow) {
 	        this.slideshow = true;
 	    }
 
+	    this._setParent(options.el);
 	    this.createMediaEl();
 	    this._attachListeners();
 	};
@@ -973,7 +957,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -1137,7 +1121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */if (typeof Object.create === 'function') {
