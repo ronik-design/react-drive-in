@@ -100,6 +100,15 @@ body {
     margin-bottom: 4rem;
 }
 
+.page-heading {
+    color: #fff;
+    font-size: 6.4rem;
+    font-weight: 700;
+    letter-spacing: -0.08rem;
+    margin-bottom: 2.4rem;
+    text-align: center;
+}
+
 .heading {
     color: #fff;
     font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
