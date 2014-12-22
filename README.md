@@ -110,6 +110,9 @@ loop | `Boolean` | true | no | Should videos / playlists loop or begin again whe
 slideshow | `Boolean` | false | no | Force the component to display fallback images / poster rather than videos.
 onPlaying | `Function` | null | no | Register a callback for when the video / slideshow starts playing.
 onPause | `Function` | null | no | Register a callback for when the video / slideshow is paused.
+onTime | `Function` | null | no | Emits regular time-tracking events from Drive-In lib with current media item play position.
+onTimeFrequency | `Number` | 500 | no | Frequency at which to emit time-tracking events.
+onCanPlay | `Function` | null | no | Callback for when a loaded media item can play.
 
 ## Developing
 
