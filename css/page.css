@@ -1,0 +1,237 @@
+html, body {
+    position: relative;
+    width: 100%;
+}
+
+html {
+    font-size: 62.5%;
+    height: 100%;
+}
+
+body {
+    font-size: 1.6rem;
+    height: auto;
+}
+
+*, *:before, *:after {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.page-header {
+    position: relative;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    display: block;
+    margin: 0 4rem -2rem;
+}
+
+.page-logo {
+    display: inline-block;
+    background-image: url('../img/logo.png');
+    background-size: contain;
+    width: 14rem;
+    height: 5.7rem;
+    margin: 2.4rem 0;
+}
+
+.nav {
+    float: right;
+}
+
+.nav__list li {
+    display: inline-block;
+    margin-left: 1.4rem;
+}
+
+.nav__link {
+    color: #fff;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 10.6rem;
+    vertical-align: middle;
+    text-decoration: none;
+
+    -webkit-transition: color 0.3s ease-in-out;
+    -moz-transition: color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out;
+}
+
+.nav__link:hover {
+    color: #f70a53;
+}
+
+.page-wrapper,
+.page-content {
+    position: relative;
+}
+
+.container {
+    padding: 0 4rem;
+    margin: 0 auto;
+    position: relative;
+    max-width: 112rem;
+}
+
+.background {
+    display: block;
+    position: relative;
+    width: 100%;
+    padding: 4rem 0;
+    margin: 5.4rem 0;
+    background-color: rgba(0,0,0, 0.6);
+}
+
+.copy--dek {
+    color: #fff;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 3.2rem;
+    font-weight: 300;
+    line-height: 1.4;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 4rem;
+}
+
+.heading {
+    color: #fff;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 3.4rem;
+    font-weight: 600;
+    line-height: 1.8;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.subheading {
+    color: #fff;
+    display: block;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.3;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.copy {
+    color: #fff;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.copy a {
+    color: #f70a53;
+    font-family: inherit;
+    text-decoration: none;
+    position: relative;
+    white-space: nowrap;
+    margin: 0 0.2rem;
+
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.copy a:after {
+    content: '';
+    background-color: #f70a53;
+    height: 1px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0.1rem;
+    opacity: 0;
+
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.copy a:hover:after {
+    bottom: -0.1rem;
+    opacity: 1;
+}
+
+.highlight  {
+    background: #fff;
+    padding: 2rem;
+    color: #111;
+    font-weight: 300;
+    line-height: 1.2;
+    font-size: 1.4rem;
+    overflow-y: scroll;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 3.4rem;
+}
+
+.button-container {
+    display: block;
+    text-align: left;
+    margin-top: 1.2rem;
+    margin-bottom: 4rem;
+    vertical-align: middle;
+    max-width: 86.2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button {
+    margin: 1rem;
+    position: relative;
+    background-color: transparent;
+    border: 1px solid #f70a53;
+    color: #f70a53;
+    display: inline-block;
+    font-family: "Source Sans Pro", Arial, Helvetica, sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    padding: 1.2rem 1.8rem;
+    cursor: pointer;
+    outline: 0 none;
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.button-container .button:first-child {
+    margin-left: 0;
+}
+
+.button:hover,
+.button:active {
+    color: #e7e6e4;
+    background-color: #f70a53;
+}
+
+.button:active {
+    top: 0.1rem;
+}
+
