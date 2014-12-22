@@ -50,56 +50,56 @@
 
                 <p class="copy">The simplest example:</p>
 
-                <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
-                    <span class="kd">var</span> <span class="nx">$mountNode</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;drive-in&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">$mountNode</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;drive-in&#39;</span><span class="p">);</span>
 
-                    <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
-                    <span class="o">&lt;</span><span class="nx">DriveIn</span>
-                    <span class="nx">show</span><span class="o">=</span><span class="s2">&quot;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4&quot;</span>
-                    <span class="nx">poster</span><span class="o">=</span><span class="s2">&quot;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg&quot;</span>
-                    <span class="o">/&gt;</span><span class="p">,</span>
-                    <span class="nx">$mountNode</span>
-                    <span class="p">);</span></code></pre></div>
+<span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">DriveIn</span>
+        <span class="nx">show</span><span class="o">=</span><span class="s2">&quot;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4&quot;</span>
+        <span class="nx">poster</span><span class="o">=</span><span class="s2">&quot;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg&quot;</span>
+        <span class="o">/&gt;</span><span class="p">,</span>
+    <span class="nx">$mountNode</span>
+<span class="p">);</span></code></pre></div>
 
                 <p class="copy">More complex:</p>
 
-                <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
 
-                    <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
-                    <span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
+<span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="kd">var</span> <span class="nx">DriveIn</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;react-drive-in&#39;</span><span class="p">);</span>
 
-                    <span class="kd">var</span> <span class="nx">playlist</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="p">[</span>
-                    <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/river.mp4&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/river.ogv&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;https://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/river.jpg&#39;</span>
-                    <span class="p">],</span>
-                    <span class="p">[</span>
-                    <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/dock.mp4&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/dock.ogv&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/dock.jpg&#39;</span>
-                    <span class="p">],</span>
-                    <span class="p">[</span>
-                    <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.ogv&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg&#39;</span>
-                    <span class="p">]</span>
-                    <span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">playlist</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/river.mp4&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/river.ogv&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;https://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/river.jpg&#39;</span>
+        <span class="p">],</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/dock.mp4&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;http://dfcb.github.io/BigVideo.js/vids/dock.ogv&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/dock.jpg&#39;</span>
+        <span class="p">],</span>
+        <span class="p">[</span>
+            <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.ogv&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg&#39;</span>
+        <span class="p">]</span>
+    <span class="p">];</span>
 
-                    <span class="kd">var</span> <span class="nx">onPlaying</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">itemNum</span><span class="p">)</span> <span class="p">{};</span>
-                    <span class="kd">var</span> <span class="nx">onPause</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
+    <span class="kd">var</span> <span class="nx">onPlaying</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">itemNum</span><span class="p">)</span> <span class="p">{};</span>
+    <span class="kd">var</span> <span class="nx">onPause</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
 
-                    <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
-                    <span class="o">&lt;</span><span class="nx">DriveIn</span>
-                    <span class="nx">showPlaylist</span><span class="o">=</span><span class="p">{</span><span class="nx">playlist</span><span class="p">}</span>
-                    <span class="nx">onPlaying</span><span class="o">=</span><span class="p">{</span><span class="nx">onPlaying</span><span class="p">}</span>
-                    <span class="nx">onPause</span><span class="o">=</span><span class="p">{</span><span class="nx">onPause</span><span class="p">}</span>
-                    <span class="nx">loop</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
-                    <span class="nx">slideshow</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span>
-                    <span class="nx">mute</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
-                    <span class="o">/&gt;</span><span class="p">,</span>
-                    <span class="nx">$mountNode</span>
-                    <span class="p">);</span></code></pre></div>
+    <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
+    <span class="o">&lt;</span><span class="nx">DriveIn</span>
+        <span class="nx">showPlaylist</span><span class="o">=</span><span class="p">{</span><span class="nx">playlist</span><span class="p">}</span>
+        <span class="nx">onPlaying</span><span class="o">=</span><span class="p">{</span><span class="nx">onPlaying</span><span class="p">}</span>
+        <span class="nx">onPause</span><span class="o">=</span><span class="p">{</span><span class="nx">onPause</span><span class="p">}</span>
+        <span class="nx">loop</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+        <span class="nx">slideshow</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span>
+        <span class="nx">mute</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+        <span class="o">/&gt;</span><span class="p">,</span>
+    <span class="nx">$mountNode</span>
+<span class="p">);</span></code></pre></div>
 
                 <h3 class="heading">Try for yourself</h3>
 
