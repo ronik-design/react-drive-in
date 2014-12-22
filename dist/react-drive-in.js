@@ -77,7 +77,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        loop: React.PropTypes.bool,
 	        slideshow: React.PropTypes.bool,
 	        onPlaying: React.PropTypes.func,
-	        onPause: React.PropTypes.func
+	        onPause: React.PropTypes.func,
+	        onTime: React.PropTypes.func,
+	        onTimeFrequency: React.PropTypes.number,
+	        onCanPlay: React.PropTypes.func
 	    },
 
 	    getDefaultProps:function() {
@@ -87,7 +90,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            mute: true,
 	            loop: true,
 	            slideshow: false,
-	            volume: 0.5
+	            volume: 0.5,
+	            onTimeFrequency: 500
 	        };
 	    },
 
@@ -127,6 +131,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    },
 
+	    setLoading:function() {
+	        this.setState({ canPlay: false });
+	    },
+
+	    setCanPlay:function() {
+	        this.setState({ canPlay: true });
+	        if (this.props.onCanPlay) {
+	            this.props.onCanPlay();
+	        }
+	    },
+
 	    componentWillMount:function() {
 	        this.DI = new DriveIn();
 	    },
@@ -136,7 +151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            options,
 	            playlist;
 
-	        DI.init({ el: this.getMedia() });
+	        DI.init({ el: this.getMedia(), slideshow: this.props.slideshow });
 
 	        options = {
 	            mute: this.props.mute,
@@ -153,6 +168,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        DI.on('media.playing', function(currentItem)  { this.setPlaying(currentItem); }.bind(this));
 	        DI.on('media.pause', function(currentItem)  { this.setPause(); }.bind(this));
+	        DI.on('media.loading', function()  { this.setLoading(); }.bind(this));
+	        DI.on('media.canplay', function()  { this.setCanPlay(); }.bind(this));
+
+	        if (this.props.onTime) {
+	            this.intervalId = window.setInterval(function()  {
+	                var currTime = DI.currentTime();
+	                this.props.onTime(currTime);
+	            }.bind(this), this.props.onTimeFrequency);
+	        }
 
 	        this.setState({
 	            mute: this.props.mute,
@@ -162,6 +186,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    componentWillUnmount:function() {
+	        if (this.intervalId) {
+	            window.clearInterval(this.intervalId);
+	        }
+
 	        this.DI.removeAllListeners();
 	        this.DI.close();
 	        delete(this.DI);
@@ -185,26 +213,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.state.mute = false;
 	    },
 
-	    renderMedia:function() {
-	        var content;
+	    seekTo:function(time) {
+	        this.DI.seekTo(time);
+	    },
 
-	        if ('ontouchstart' in window || this.props.slideshow) {
-	            content = React.DOM.img(null);
-	        } else {
-	            content = React.DOM.video({height: "1", width: "1", preload: "auto"});
-	        }
-
-	        return (
-	            React.DOM.div({ref: "media", className: "drive-in-media"}, 
-	                content
-	            )
-	        );
+	    duration:function() {
+	        return this.DI.duration();
 	    },
 
 	    render:function() {
 	        return (
 	          React.DOM.div({ref: "wrap", id: "drive-in-wrap", className: this.props.className}, 
-	            this.renderMedia()
+	            React.DOM.div({ref: "media", className: "drive-in-media"})
 	          )
 	        );
 	    }
@@ -223,27 +243,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/** @jsx React.DOM */var Jvent = __webpack_require__(3);
 	var inherits = __webpack_require__(4);
-
-	function getMedia(el) {
-	    var media = {},
-	        children = el.children,
-	        node;
-
-	    for (var i = 0; i < children.length; i++) {
-	        node = children[i];
-	        if (node.nodeName === 'VIDEO' && !media.el) {
-	            media.type = 'video';
-	            media.el = node;
-	        }
-
-	        if (node.nodeName === 'IMG' && !media.el) {
-	            media.type = 'image';
-	            media.el = node;
-	        }
-	    }
-
-	    return media;
-	}
 
 	function windowWidth() {
 	    if (self.innerHeight) {
@@ -295,7 +294,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            gif: true
 	        };
 
-	    var ext = src.match(/\.([mp4|ogv|webm|jpg|jpeg|png|gif]+)$/)[1];
+	    var ext = src.replace(/[\?|\#].+/, '').match(/\.([mp4|ogv|webm|jpg|jpeg|png|gif]+)$/)[1];
 
 	    if (videoExts[ext]) {
 	        if (ext === 'ogv') {
@@ -394,6 +393,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!silent) this.emit('resume');
 	    };
 
+	    this.currentTime = function(time) {
+	        var currTime = new Date() - start;
+	        if (timerId) {
+	            this.pause(true);
+	            this.resume(true);
+	        }
+	        return currTime;
+	    };
+
 	    this.destroy = function() {
 	        self.pause(true);
 	        self.removeAllListeners();
@@ -414,6 +422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.mediaAspect = 16 / 9;
 	    this.playlist = null;
 	    this.loop = true;
+	    this.slideshow = false;
 
 	    this.playlistLength = 0;
 	    this.currentItem = 0;
@@ -459,16 +468,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (currMediaType == 'video') {
 
 	            setStyles(parentEl, {
-	                width: containerH * mediaAspect + 'px',
-	                height: containerH + 'px'
-	            });
-
-	            setStyles(parentEl, {
-	                height: containerH + 'px'
+	                width: Math.ceil(containerH * mediaAspect) + 'px',
+	                height: containerH + 1 + 'px'
 	            });
 
 	            setStyles(mediaEl, {
-	                width: (containerH * mediaAspect) + 'px',
+	                width: Math.ceil(containerH * mediaAspect) + 'px',
 	                height: containerH + 'px'
 	            });
 
@@ -490,11 +495,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	            setStyles(parentEl, {
 	                width: containerW + 'px',
-	                height: (containerW / mediaAspect) + 'px'
-	            });
-
-	            setStyles(parentEl, {
-	                height: (containerW / mediaAspect) + 'px'
+	                height: Math.ceil(containerW / mediaAspect) + 1 + 'px'
 	            });
 
 	            setStyles(mediaEl, {
@@ -538,6 +539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var mediaEl = this.mediaEl,
 	        source,
 	        src,
+	        posterSrc,
 	        canPlayType;
 
 	    for (var i in item) {
@@ -548,11 +550,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } else if (canPlayType && !src) {
 	            src = source.src;
 	        }
+
+	        if (source.type.search(/^image/) === 0 && !src) {
+	            posterSrc = source.src;
+	        }
 	    }
 
 	    if (src) {
 
 	        this.mediaEl.src = src;
+
+	        if (posterSrc) {
+	            this.mediaEl.poster = posterSrc;
+	        }
 
 	        if (this.playlistLength < 2) this.mediaEl.loop = true;
 	        if (this.mute) this.setVolume(0);
@@ -560,6 +570,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.currentItem = itemNum;
 
 	        this.mediaEl.load();
+
+	    } else if (posterSrc || this.poster) {
+
+	        // Fallback to a slideshow.
+	        this.slideshow = true;
+	        this.createMediaEl();
+	        this._playImageItem(item, itemNum);
 
 	    } else {
 
@@ -648,20 +665,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	        self.emit('media.pause');
 	    }
 
-	    function onEnded() {
-	        self.emit('media.ended', self.currentItem);
+	    function onProgress(event) {
+	        // Sort of buggy, with readyState and buffer being inconsistent...
+	        var percent = 0,
+	            ready = event.target.readyState,
+	            network = event.target.networkState,
+	            buffered = event.target.buffered,
+	            total = event.target.duration;
 
-	        if (self.playlistLength > 1 && self.loop) {
-	            var itemNum = 0;
-	            if (self.currentItem + 1 < self.playlistLength) {
-	                itemNum = self.currentItem + 1;
+	        if (network === 1 && ready === 0) {
+	            percent = 100;
+	        }
+
+	        if (ready > 0) {
+	            var start = buffered.start(0);
+	            var end = buffered.end(0);
+	            percent = (end/total) * 100;
+	        }
+
+	        self.emit('media.progress', percent);
+	    }
+
+	    function onEnded() {
+	        self.emit('media.loading');
+	        if (!self._seeking) {
+	            self.emit('media.ended', self.currentItem);
+	            if (self.playlistLength > 1 && self.loop) {
+	                var itemNum = 0;
+	                if (self.currentItem + 1 < self.playlistLength) {
+	                    itemNum = self.currentItem + 1;
+	                }
+	                self.play(itemNum);
 	            }
-	            self.play(itemNum);
 	        }
 	    }
 
 	    function onCanPlay() {
+	        self.emit('media.canplay');
 	        mediaEl.play();
+	        if (self._seeking) {
+	            self._seeking = false;
+	        }
 	    }
 
 	    this._addListener(mediaEl, 'loadedmetadata', onLoadedMetadata);
@@ -669,6 +713,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._addListener(mediaEl, 'pause', onPause);
 	    this._addListener(mediaEl, 'ended', onEnded);
 	    this._addListener(mediaEl, 'canplay', onCanPlay);
+	    this._addListener(mediaEl, 'progress', onProgress, false);
 	};
 
 	DriveIn.prototype._attachImageListeners = function() {
@@ -739,21 +784,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.parentEl;
 	};
 
-	DriveIn.prototype._setMedia = function(media) {
-	    this.mediaEl = media.el;
+	// DriveIn.prototype._setMedia = function(media) {
+	//     this.mediaEl = media.el;
+	//     setStyles(this.mediaEl, {
+	//         display: 'block'
+	//     });
+
+	//     this.currMediaType = media.type;
+
+	//     return this.mediaEl;
+	// };
+
+	DriveIn.prototype.cleanup = function() {
+	    var el = this.parentEl;
+	    while (el.firstChild) {
+	        el.removeChild(el.firstChild);
+	    }
+	};
+
+	DriveIn.prototype.createMediaEl = function() {
+	    var mediaEl,
+	        mediaType;
+
+	    if (this.mediaEl) this.cleanup();
+
+	    if (this.slideshow) {
+	        mediaType = 'image';
+	        mediaEl = createEl('img');
+	    } else {
+	        mediaType = 'video';
+	        mediaEl = createEl('video', {
+	            height: 1,
+	            width: 1
+	            // preload: 'auto'
+	        });
+	    }
+
+	    this.mediaEl = mediaEl;
+	    this.currMediaType = mediaType;
+
 	    setStyles(this.mediaEl, {
 	        display: 'block'
 	    });
 
-	    this.currMediaType = media.type;
-
-	    return this.mediaEl;
+	    this.parentEl.appendChild(mediaEl);
 	};
 
 	DriveIn.prototype.init = function(options) {
+	    options = options || {};
+
 	    var parentEl = this._setParent(options.el);
-	    var media = getMedia(parentEl);
-	    this._setMedia(media);
+
+	    if ('ontouchstart' in window || options.slideshow) {
+	        this.slideshow = true;
+	    }
+
+	    this.createMediaEl();
 	    this._attachListeners();
 	};
 
@@ -822,7 +908,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._playItem(this.playlist[itemNum], itemNum);
 	    } else {
 	        if (this.currMediaType === 'video') {
-	            this.mediaEl.play()
+	            this.mediaEl.play();
 	        } else {
 	            if (this._slideshowTimer) {
 	                this._slideshowTimer.resume();
@@ -833,7 +919,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	DriveIn.prototype.pause = function() {
 	    if (this.currMediaType === 'video') {
-	        this.mediaEl.pause()
+	        this.mediaEl.pause();
 	    } else {
 	        if (this._slideshowTimer) {
 	            this._slideshowTimer.pause();
@@ -843,9 +929,43 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	DriveIn.prototype.close = function() {
 	    this._removeAllListeners();
+	    this.cleanup();
 	    if (this._slideshowTimer) {
 	        this._slideshowTimer.destroy();
 	        delete this._slideshowTimer;
+	    }
+	};
+
+	DriveIn.prototype.currentTime = function() {
+	    if (this.currMediaType === 'video') {
+	        return this.mediaEl.currentTime;
+	    } else {
+	        return this._slideshowTimer.currentTime();
+	    }
+	};
+
+	DriveIn.prototype.currentTime = function() {
+	    if (this.currMediaType === 'video') {
+	        return this.mediaEl.currentTime;
+	    } else {
+	        return this._slideshowTimer.currentTime();
+	    }
+	};
+
+	DriveIn.prototype.seekTo = function(time) {
+	    this._seeking = true;
+	    if (this.currMediaType === 'video') {
+	        this.mediaEl.currentTime = time;
+	    } else {
+	        // Not enabled for image slideshows
+	    }
+	};
+
+	DriveIn.prototype.duration = function() {
+	    if (this.currMediaType === 'video') {
+	        return this.mediaEl.duration;
+	    } else {
+	        return this.slideshowItemDuration;
 	    }
 	};
 

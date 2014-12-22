@@ -62,6 +62,8 @@
         <button onClick="itemSelect(1);">Item #1</button>
         <button onClick="itemSelect(2);">Item #2</button>
         <button onClick="itemSelect(3);">Item #3</button>
+        <button onClick="toTime(2);">2 sec</button>
+        <button onClick="toTime(1);">1 sec</button>
       </div>
 
       <div class="toggle buttons">
@@ -101,10 +103,10 @@
         currMode = mode;
         React.unmountComponentAtNode(driveInEl);
         driveIn = React.render(
-          <DriveIn
-            showPlaylist={playlist}
-            onPlaying={onPlaying}
-            slideshow={(mode === 'slideshow')}
+            <DriveIn
+                showPlaylist={playlist}
+                onPlaying={onPlaying}
+                slideshow={(mode === 'slideshow')}
             />,
           driveInEl
         );
@@ -112,6 +114,10 @@
 
       function itemSelect(itemNum) {
         driveIn.play(itemNum - 1);
+      }
+
+      function toTime(time) {
+        driveIn.seekTo(time);
       }
 
       function playToggle() {
@@ -132,19 +138,19 @@
 
       var playlist = [
         [
-          'http://dfcb.github.io/BigVideo.js/vids/river.mp4',
-          'http://dfcb.github.io/BigVideo.js/vids/river.ogv',
-          'https://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/river.jpg'
+          'https://github.com/dfcb/BigVideo.js/blob/gh-pages/vids/river.mp4?raw=true',
+          'https://github.com/dfcb/BigVideo.js/blob/gh-pages/vids/river.ogv?raw=true',
+          'https://github.com/ronik-design/react-drive-in/blob/master/example/river.jpg?raw=true'
         ],
         [
-          'http://dfcb.github.io/BigVideo.js/vids/dock.mp4',
-          'http://dfcb.github.io/BigVideo.js/vids/dock.ogv',
-          'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/dock.jpg'
+          'https://github.com/dfcb/BigVideo.js/blob/gh-pages/vids/dock.mp4?raw=true',
+          'https://github.com/dfcb/BigVideo.js/blob/gh-pages/vids/dock.ogv?raw=true',
+          'https://github.com/ronik-design/react-drive-in/blob/master/example/dock.jpg?raw=true'
         ],
         [
-          'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4',
-          'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.ogv',
-          'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg'
+          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.mp4?raw=true',
+          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.ogv?raw=true',
+          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.jpg?raw=true'
         ]
       ];
 

@@ -13,7 +13,10 @@ module.exports = React.createClass({
         loop: React.PropTypes.bool,
         slideshow: React.PropTypes.bool,
         onPlaying: React.PropTypes.func,
-        onPause: React.PropTypes.func
+        onPause: React.PropTypes.func,
+        onTime: React.PropTypes.func,
+        onTimeFrequency: React.PropTypes.number,
+        onCanPlay: React.PropTypes.func
     },
 
     getDefaultProps() {
@@ -23,7 +26,8 @@ module.exports = React.createClass({
             mute: true,
             loop: true,
             slideshow: false,
-            volume: 0.5
+            volume: 0.5,
+            onTimeFrequency: 500
         };
     },
 
@@ -63,6 +67,17 @@ module.exports = React.createClass({
         }
     },
 
+    setLoading() {
+        this.setState({ canPlay: false });
+    },
+
+    setCanPlay() {
+        this.setState({ canPlay: true });
+        if (this.props.onCanPlay) {
+            this.props.onCanPlay();
+        }
+    },
+
     componentWillMount() {
         this.DI = new DriveIn();
     },
@@ -72,7 +87,7 @@ module.exports = React.createClass({
             options,
             playlist;
 
-        DI.init({ el: this.getMedia() });
+        DI.init({ el: this.getMedia(), slideshow: this.props.slideshow });
 
         options = {
             mute: this.props.mute,
@@ -88,7 +103,16 @@ module.exports = React.createClass({
         }
 
         DI.on('media.playing', (currentItem) => { this.setPlaying(currentItem); });
-        DI.on('media.pause', (currentItem) => { this.setPause(); });
+        DI.on('media.pause', () => { this.setPause(); });
+        DI.on('media.loading', () => { this.setLoading(); });
+        DI.on('media.canplay', () => { this.setCanPlay(); });
+
+        if (this.props.onTime) {
+            this.intervalId = window.setInterval(() => {
+                var currTime = DI.currentTime();
+                this.props.onTime(currTime);
+            }, this.props.onTimeFrequency);
+        }
 
         this.setState({
             mute: this.props.mute,
@@ -98,6 +122,10 @@ module.exports = React.createClass({
     },
 
     componentWillUnmount() {
+        if (this.intervalId) {
+            window.clearInterval(this.intervalId);
+        }
+
         this.DI.removeAllListeners();
         this.DI.close();
         delete(this.DI);
@@ -121,26 +149,18 @@ module.exports = React.createClass({
         this.state.mute = false;
     },
 
-    renderMedia() {
-        var content;
+    seekTo(time) {
+        this.DI.seekTo(time);
+    },
 
-        if ('ontouchstart' in window || this.props.slideshow) {
-            content = <img />;
-        } else {
-            content = <video height="1" width="1" preload="auto"></video>;
-        }
-
-        return (
-            <div ref="media" className="drive-in-media">
-                {content}
-            </div>
-        );
+    duration() {
+        return this.DI.duration();
     },
 
     render() {
         return (
           <div ref="wrap" id="drive-in-wrap" className={this.props.className}>
-            {this.renderMedia()}
+            <div ref="media" className="drive-in-media"></div>
           </div>
         );
     }
