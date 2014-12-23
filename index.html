@@ -34,14 +34,16 @@
 
 <div class="page-wrapper">
     <div class="page-content">
+        <div class="page-heading"></div>
+
         <div class="container">
             <div class="background">
-                <h1 class="page-heading">React Drive-in</h1>
 
                 <p class="copy--dek">A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It does not use jQuery, video.js, or any other large libraries. Only 3.5k minified and gzipped.</p>
 
                 <p class="copy">React Drive-in allows you to add fullscreen video to your website. Much like BigVideo.js, it can play a video or a playlist of videos, either silently or with original audio, and falls back to images for devices that don't support autoplay for ambient video.</p>
 
+                <!-- Installation -->
                 <h3 class="heading">Installation</h3>
 
                 <p class="copy">React Drive-in is super easy to install. <a href="http://facebook.github.io/react/downloads.html" target="_blank">React</a> is the only dependency. <a href="https://www.npmjs.com/" target="_blank">npm</a> is the easiest way to install React Drive-in.</p>
@@ -50,6 +52,7 @@
 
                 <p class="copy">Alternatively, you can <a href="https://github.com/ronik-design/react-drive-in/archive/v1.0.0.zip" target="_blank">download</a> the latest release.</p>
 
+                <!-- Usage -->
                 <h3 class="heading">Usage</h3>
 
                 <p class="copy">The simplest example:</p>
@@ -109,33 +112,61 @@
         <span class="p">]</span>
     <span class="p">];</span>
 
+    <span class="kd">var</span> <span class="nx">onCanPlay</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
     <span class="kd">var</span> <span class="nx">onPlaying</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">itemNum</span><span class="p">)</span> <span class="p">{};</span>
     <span class="kd">var</span> <span class="nx">onPause</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{};</span>
+    <span class="kd">var</span> <span class="nx">onTime</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">playPosition</span><span class="p">)</span> <span class="p">{};</span>
+    <span class="kd">var</span> <span class="nx">onTimeFrequency</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
 
     <span class="nx">React</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span>
     <span class="o">&lt;</span><span class="nx">DriveIn</span>
-        <span class="nx">showPlaylist</span><span class="o">=</span><span class="p">{</span><span class="nx">playlist</span><span class="p">}</span>
-        <span class="nx">onPlaying</span><span class="o">=</span><span class="p">{</span><span class="nx">onPlaying</span><span class="p">}</span>
-        <span class="nx">onPause</span><span class="o">=</span><span class="p">{</span><span class="nx">onPause</span><span class="p">}</span>
-        <span class="nx">loop</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
-        <span class="nx">slideshow</span><span class="o">=</span><span class="p">{</span><span class="kc">false</span><span class="p">}</span>
-        <span class="nx">mute</span><span class="o">=</span><span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+        <span class="nx">showPlaylist</span> <span class="o">=</span> <span class="p">{</span><span class="nx">playlist</span><span class="p">}</span>
+        <span class="nx">onPlaying</span> <span class="o">=</span> <span class="p">{</span><span class="nx">onPlaying</span><span class="p">}</span>
+        <span class="nx">onPause</span> <span class="o">=</span> <span class="p">{</span><span class="nx">onPause</span><span class="p">}</span>
+        <span class="nx">loop</span> <span class="o">=</span> <span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+        <span class="nx">slideshow</span> <span class="o">=</span> <span class="p">{</span><span class="kc">false</span><span class="p">}</span>
+        <span class="nx">mute</span> <span class="o">=</span> <span class="p">{</span><span class="kc">true</span><span class="p">}</span>
+        <span class="nx">onCanPlay</span> <span class="o">=</span> <span class="p">{</span><span class="nx">onCanPlay</span><span class="p">}</span>
+        <span class="nx">onTime</span> <span class="o">=</span> <span class="p">{</span><span class="nx">onTime</span><span class="p">}</span>
+        <span class="nx">onTimeFrequency</span> <span class="o">=</span> <span class="p">{</span><span class="nx">onTimeFrequency</span><span class="p">}</span>
         <span class="o">/&gt;</span><span class="p">,</span>
     <span class="nx">$mountNode</span>
 <span class="p">);</span></code></pre></div>
+
+                <h3 class="heading">Formats</h4>
+
+                <p class="copy">React Drive-in current supports the following formats: mp4, ogv, webm, jpg, gif, and png.</p>
+
+                <h3 class="heading">What to show</h3>
+
+                <p class="copy"><span class="inline-code">show</span> is for single items. You can provide either a string or a fallback array, e.g. <span class="inline-code">[ 'video.mp4', 'video.ogv', 'video.jpg' ]</span>.</p>
+                <p class="copy"><span class="inline-code">showPlaylist</span> is for MULTIPLE ITEMS. You can provide either an array or strings, e.g. <span class="inline-code">[ 'video1.mp4', 'video2.mp4' ]</span> or an array of fallback arrays, e.g. <span class="inline-code">[ [ 'video1.mp4', 'video1.ogv' ], [ 'video2.mp4', 'video2.ogv' ] ]</span></p>
+                <p class="copy">The component falls back to using an image on touch devices, since many will not play video inline. Thus, you might want to specify fallback images either through the <span class="inline-code">poster</span> property or in the fallback arrays.</p>
+
+                <h3 class="heading">Other properties</h3>
+
+                <p class="copy">When initializing React Drive-in you may also choose to alter its behavior in a variety of ways. You can choose whether to <span class="inline-code">mute</span> the video(s), whether they <span class="inline-code">loop</span>, or force an image-only <span class="inline-code">slideshow</span> using the image fallbacks for your videos.</p>
+
+                <h4 class="subheading">onPlaying</h4>
+
+                <p class="copy">Register a callback for when the video / slideshow starts playing.</p>
+
+                <h4 class="subheading">onTime / onTimeFrequency</h4>
+
+                <p class="copy">Register a callback for regular time-tracking events with the current media item play position, and control the the frequency the time-tracking events are emitted.</p>
 
                 <h3 class="heading">Try for yourself</h3>
 
                 <p class="copy">React Drive-in's API allows for some powerful interactions.</p>
 
-                <h3 class="subheading">Mode Selection</h3>
+                <h4 class="subheading">Mode Selection</h4>
 
                 <div class="button-container">
                     <button class="button" onClick="modeSelect('video');">Videos</button>
                     <button class="button" onClick="modeSelect('slideshow');">Images</button>
                 </div>
 
-                <h3 class="subheading">Item selection</h3>
+                <h4 class="subheading">Item selection</h4>
 
                 <div class="button-container">
                     <button class="button" onClick="itemSelect(1);">Item #1</button>
@@ -143,7 +174,7 @@
                     <button class="button" onClick="itemSelect(3);">Item #3</button>
                 </div>
 
-                <h3 class="subheading">Toggle Play / Mute</h3>
+                <h4 class="subheading">Toggle Play / Mute</h4>
 
                 <div class="button-container">
                     <button class="button" onClick="playToggle();">Play / Pause</button>
