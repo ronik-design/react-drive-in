@@ -1,6 +1,6 @@
 {
   "name": "react-drive-in",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "React component supporting background videos and playlists.",
   "main": "dist/react-drive-in.js",
   "scripts": {
@@ -17,7 +17,8 @@
     "bigvideo",
     "background",
     "slideshow",
-    "playlist"
+    "playlist",
+    "react-component"
   ],
   "peerDependencies": {
     "react": ">=0.12.0"
