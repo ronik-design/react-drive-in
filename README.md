@@ -39,14 +39,14 @@ So easy. React is the only dependency:
 
   var playlist = [
     [
-      'http://dfcb.github.io/BigVideo.js/vids/river.mp4',
-      'http://dfcb.github.io/BigVideo.js/vids/river.ogv',
-      'https://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/river.jpg'
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.mp4?raw=true',
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.ogv?raw=true',
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.jpg?raw=true'
     ],
     [
-      'http://dfcb.github.io/BigVideo.js/vids/dock.mp4',
-      'http://dfcb.github.io/BigVideo.js/vids/dock.ogv',
-      'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/dock.jpg'
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.mp4?raw=true',
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.ogv?raw=true',
+      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.jpg?raw=true'
     ],
     [
       'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4',
