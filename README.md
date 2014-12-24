@@ -2,7 +2,7 @@
 
 ![Git release](http://img.shields.io/github/release/ronik-design/react-drive-in.svg?style=flat)
 
-A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 3.5k minified and gzipped.
+A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 4k minified and gzipped. This React component is a wrapper over the core [Drive-In](https://github.com/ronik-design/drive-in) lib.
 
 ## Install
 
@@ -130,7 +130,7 @@ See the [License](LICENSE) file.
 
 ## Credit
 
-- The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10)
-- [BigVideo.js](http://dfcb.github.io/BigVideo.jj/) was the inspiration, and the source of some hotlinked video clips.
+- The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10) released under a Creative Commons license.
+- [BigVideo.js](http://dfcb.github.io/BigVideo.jj/) was the inspiration.
 - [react-video](https://github.com/pedronauck/react-video) provided a great project scaffold for a React component.
 
