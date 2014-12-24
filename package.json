@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "browser-sync": "^1.5.2",
-    "drive-in": "git://github.com/ronik-design/drive-in",
+    "drive-in": "^1.0.0",
     "gulp": "^3.8.6",
     "gulp-gh-pages": "^0.4.0",
     "gulp-header": "^1.2.1",
