@@ -133,6 +133,6 @@ See the [License](LICENSE) file.
 ## Credit
 
 - The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10) released under a Creative Commons license.
-- [BigVideo.js](http://dfcb.github.io/BigVideo.jj/) was the inspiration.
+- [BigVideo.js](http://dfcb.github.io/BigVideo.js/) was the inspiration.
 - [react-video](https://github.com/pedronauck/react-video) provided a great project scaffold for a React component.
 
