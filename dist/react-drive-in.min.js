@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.0.1
+ * @version v1.0.4
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
