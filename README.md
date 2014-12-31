@@ -4,6 +4,8 @@
 
 A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 4k minified and gzipped. This React component is a wrapper over the core [Drive-In](https://github.com/ronik-design/drive-in) lib. 
 
+Demo and some example functionality here: [github.io](http://ronik-design.github.io/react-drive-in/)
+
 Created by [Ronik Design](http://www.ronikdesign.com).
 
 ## Install
