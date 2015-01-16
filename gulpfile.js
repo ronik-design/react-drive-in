@@ -6,6 +6,7 @@ var Gulp = require('gulp'),
     Header = require('gulp-header'),
     Rename = require('gulp-rename'),
     MinifyCSS = require('gulp-minify-css'),
+    Autoprefix = require('less-plugin-autoprefix'),
     BrowserSync = require('browser-sync'),
     Webpack = require('webpack'),
     webpackConfig = require('./webpack.config.js'),
@@ -40,17 +41,19 @@ Gulp.task('webpack', function(callback) {
 });
 
 Gulp.task('css', function() {
+
     if (argv.production || argv.p) {
-        return Gulp.src('./dist/react-video.css')
+        return Gulp.src('./dist/react-drive-in.css')
             .pipe(MinifyCSS())
             .pipe(Rename({
                 suffix: '.min'
             }))
-            .pipe(Header(require('./utils/banner')))
             .pipe(Gulp.dest('./dist'));
     } else {
         return Gulp.src('./lib/*.less')
-            .pipe(Less())
+            .pipe(Less({
+                plugins: [ new Autoprefix({ browsers: ['last 5 version'] }) ]
+            }))
             .pipe(Header(require('./utils/banner')))
             .pipe(Gulp.dest('./dist'));
     }

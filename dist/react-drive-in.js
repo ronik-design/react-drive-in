@@ -248,8 +248,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
-	    inherits = __webpack_require__(7),
+	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
+	    inherits = __webpack_require__(6),
 	    Timer = __webpack_require__(4),
 	    Playlist = __webpack_require__(5);
 
@@ -393,8 +393,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            setStyles(mediaEl, {
 	                width: 'auto',
 	                height: containerH + pad + 'px'
-	                    // top: '0px',
-	                    // left: (-(containerH * mediaAspect - containerW) / 2) + 'px'
 	            });
 	        }
 
@@ -420,8 +418,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            setStyles(mediaEl, {
 	                width: containerW + 'px',
 	                height: 'auto'
-	                    // top: (-(containerW / mediaAspect - containerH) / 2) + 'px',
-	                    // left: '0px'
 	            });
 	        }
 	    }
@@ -464,6 +460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.emit('media.loading');
 
 	        mediaEl.src = src;
+	        mediaEl.preload = 'metadata';
 
 	        if (posterSrc) {
 	            mediaEl.poster = posterSrc;
@@ -480,7 +477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // Fallback to a slideshow.
 	        this.slideshow = true;
-	        this.createMediaEl();
+	        this._createMediaEl();
 	        this._playImageItem(item, itemNum);
 
 	    } else {
@@ -559,6 +556,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        mediaEl = this.mediaEl;
 
 	    function onLoadedMetadata(data) {
+	        // Safari often stalls on first load, so kickstart it.
+	        if (mediaEl.networkState < 2) {
+	            mediaEl.load();
+	        }
 	        self._setVideoData(data);
 	        self.emit('media.metadata', data);
 	    }
@@ -573,19 +574,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function onProgress(event) {
 	        // Sort of buggy, with readyState and buffer being inconsistent...
-	        var percent = 0,
-	            ready = event.target.readyState,
-	            network = event.target.networkState,
-	            buffered = event.target.buffered,
-	            total = event.target.duration;
+	        var percent = null,
+	            video = event.target;
 
-	        if (network === 1 && ready === 0) {
-	            percent = 100;
+	        // FF4+, Chrome
+	        if (video.buffered && video.buffered.length > 0 && video.buffered.end && video.duration) {
+	            percent = video.buffered.end(0) / video.duration;
 	        }
 
-	        if (ready > 0) {
-	            var end = buffered.end(0);
-	            percent = (end/total) * 100;
+	        // Some browsers (e.g., FF3.6 and Safari 5) cannot calculate target.bufferered.end()
+	        // to be anything other than 0. If the byte count is available we use this instead.
+	        // Browsers that support the else if do not seem to have the bufferedBytes value and
+	        // should skip to there. Tested in Safari 5, Webkit head, FF3.6, Chrome 6, IE 7/8.
+	        else if (typeof video.bytesTotal !== 'undefined' && video.bytesTotal > 0 && typeof video.bufferedBytes !== 'undefined') {
+	            percent = video.bufferedBytes / video.bytesTotal;
+	        }
+
+	        if (percent !== null) {
+	            percent = 100 * Math.min(1, Math.max(0, percent));
+	        }
+
+	        if (video.networkState === 1 && video.readyState === 0) {
+	            percent = 100;
 	        }
 
 	        self.emit('media.progress', percent);
@@ -594,13 +604,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function onEnded() {
 	        if (!self._seeking) {
 	            self.emit('media.ended', self.currentItem);
-	            if (self.playlistLength > 1 && self.loop) {
-	                var itemNum = 0;
-	                if (self.currentItem + 1 < self.playlistLength) {
-	                    itemNum = self.currentItem + 1;
-	                }
-	                self.play(itemNum);
-	            }
 	        }
 	    }
 
@@ -649,10 +652,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function onEnded() {
 	        self.emit('media.ended', self.currentItem);
-	        if (self.playlistLength > 1 && self.loop) {
-	            var itemNum = (self.currentItem + 1 < self.playlistLength) ? self.currentItem + 1 : 0;
-	            self.play(itemNum);
-	        }
 	    }
 
 	    this._addListener(mediaEl, 'load', onLoad);
@@ -660,12 +659,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype._attachListeners = function() {
-	    var self = this;
+	    var self = this,
+	        mediaEl = this.mediaEl;
 
 	    function onResize() {
 	        window.requestAnimationFrame(function () {
 	            if (self.metadataLoaded) {
-	                self._updateSize(self.mediaEl, self.currMediaType, self.mediaAspect);
+	                self._updateSize(mediaEl, self.currMediaType, self.mediaAspect);
 	            }
 	        });
 	    }
@@ -678,7 +678,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._attachImageListeners();
 	    }
 
+	    this.on('media.ended', function () {
+	        if (self.playlistLength > 1 && self.loop) {
+	            var itemNum = 0;
+	            if (self.currentItem + 1 < self.playlistLength) {
+	                itemNum = self.currentItem + 1;
+	            }
+	            self.play(itemNum);
+	        }
+	    });
+
 	    this.on('media.canplay', function () {
+	        mediaEl.style.opacity = 1;
 	        self.canplay = true;
 	    });
 
@@ -728,9 +739,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        mediaEl = createEl('video', {
 	            height: 1,
 	            width: 1,
-	            preload: 'none'
+	            preload: 'metadata'
 	        });
 	    }
+
+	    mediaEl.style.opacity = 0;
 
 	    this.mediaEl = mediaEl;
 	    this.currMediaType = mediaType;
@@ -769,6 +782,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype.showPlaylist = function(rawPlaylist, options) {
+	    options = options || {};
+
 	    if (options.hasOwnProperty('mute')) {
 	        this.mute = options.mute;
 	    }
@@ -800,6 +815,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.mediaEl.muted = false;
 	        this.mediaEl.volume = level;
 	    }
+	};
+
+	DriveIn.prototype.setPlaybackRate = function(rate) {
+	    if (this.currMediaType === 'image') {
+	        return;
+	    }
+
+	    this.mediaEl.playbackRate = rate || 1.0;
 	};
 
 	DriveIn.prototype.getMedia = function() {
@@ -855,14 +878,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
-	DriveIn.prototype.currentTime = function() {
-	    if (this.currMediaType === 'video') {
-	        return this.mediaEl.currentTime;
-	    } else {
-	        return this._slideshowTimer.currentTime();
-	    }
-	};
-
 	DriveIn.prototype.seekTo = function(time) {
 	    this._seeking = true;
 	    if (this.currMediaType === 'video') {
@@ -887,8 +902,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
-	    inherits = __webpack_require__(7);
+	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
+	    inherits = __webpack_require__(6);
 
 	function Timer(callback, delay) {
 	    var self = this;
@@ -1005,6 +1020,35 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -1165,35 +1209,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Expose
 	 */
 	module.exports = Jvent;
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @jsx React.DOM */if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    ctor.prototype = Object.create(superCtor.prototype, {
-	      constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }
-	    });
-	  };
-	} else {
-	  // old school shim for old browsers
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    var TempCtor = function () {}
-	    TempCtor.prototype = superCtor.prototype
-	    ctor.prototype = new TempCtor()
-	    ctor.prototype.constructor = ctor
-	  }
-	}
 
 
 /***/ }
