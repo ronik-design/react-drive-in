@@ -11,6 +11,7 @@ module.exports = React.createClass({
         duration: React.PropTypes.number,
         mute: React.PropTypes.bool,
         loop: React.PropTypes.bool,
+        playbackRate: React.PropTypes.number,
         slideshow: React.PropTypes.bool,
         onPlaying: React.PropTypes.func,
         onPause: React.PropTypes.func,
@@ -37,7 +38,8 @@ module.exports = React.createClass({
             initialized: false,
             playing: false,
             mute: true,
-            currentItem: 0
+            currentItem: 0,
+            playbackRate: 1.0
         };
     },
 
@@ -114,6 +116,10 @@ module.exports = React.createClass({
             }, this.props.onTimeFrequency);
         }
 
+        if (this.props.playbackRate) {
+            this.playbackRate(this.props.playbackRate);
+        }
+
         this.setState({
             mute: this.props.mute,
             playlist: playlist,
@@ -141,12 +147,18 @@ module.exports = React.createClass({
 
     mute() {
         this.DI.setVolume(0);
-        this.state.mute = true;
+        this.setState({ mute: true });
     },
 
     unmute() {
         this.DI.setVolume(this.props.volume);
-        this.state.mute = false;
+        this.setState({ mute: false });
+    },
+
+    playbackRate(rate) {
+        rate = rate || 1.0;
+        this.DI.setPlaybackRate(rate);
+        this.setState({ playbackRate: rate });
     },
 
     seekTo(time) {

@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.0.5
+ * @version v1.1.0
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
@@ -75,6 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        duration: React.PropTypes.number,
 	        mute: React.PropTypes.bool,
 	        loop: React.PropTypes.bool,
+	        playbackRate: React.PropTypes.number,
 	        slideshow: React.PropTypes.bool,
 	        onPlaying: React.PropTypes.func,
 	        onPause: React.PropTypes.func,
@@ -101,7 +102,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            initialized: false,
 	            playing: false,
 	            mute: true,
-	            currentItem: 0
+	            currentItem: 0,
+	            playbackRate: 1.0
 	        };
 	    },
 
@@ -178,6 +180,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }.bind(this), this.props.onTimeFrequency);
 	        }
 
+	        if (this.props.playbackRate) {
+	            this.playbackRate(this.props.playbackRate);
+	        }
+
 	        this.setState({
 	            mute: this.props.mute,
 	            playlist: playlist,
@@ -205,12 +211,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    mute:function() {
 	        this.DI.setVolume(0);
-	        this.state.mute = true;
+	        this.setState({ mute: true });
 	    },
 
 	    unmute:function() {
 	        this.DI.setVolume(this.props.volume);
-	        this.state.mute = false;
+	        this.setState({ mute: false });
+	    },
+
+	    playbackRate:function(rate) {
+	        rate = rate || 1.0;
+	        this.DI.setPlaybackRate(rate);
+	        this.setState({ playbackRate: rate });
 	    },
 
 	    seekTo:function(time) {
@@ -248,8 +260,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
-	    inherits = __webpack_require__(6),
+	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
+	    inherits = __webpack_require__(7),
 	    Timer = __webpack_require__(4),
 	    Playlist = __webpack_require__(5);
 
@@ -902,8 +914,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
-	    inherits = __webpack_require__(6);
+	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
+	    inherits = __webpack_require__(7);
 
 	function Timer(callback, delay) {
 	    var self = this;
@@ -1020,35 +1032,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @jsx React.DOM */if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    ctor.prototype = Object.create(superCtor.prototype, {
-	      constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }
-	    });
-	  };
-	} else {
-	  // old school shim for old browsers
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    var TempCtor = function () {}
-	    TempCtor.prototype = superCtor.prototype
-	    ctor.prototype = new TempCtor()
-	    ctor.prototype.constructor = ctor
-	  }
-	}
-
-
-/***/ },
-/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -1209,6 +1192,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Expose
 	 */
 	module.exports = Jvent;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
 
 
 /***/ }
