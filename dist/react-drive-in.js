@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.1.0
+ * @version v1.2.0
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
@@ -265,12 +265,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Timer = __webpack_require__(4),
 	    Playlist = __webpack_require__(5);
 
-	function windowWidth() {
+	function getWidth() {
 	    if (self.innerHeight) {
 	        return self.innerWidth;
 	    }
 
-	    if (document.documentElement && document.documentElement.clientHeight) {
+	    if (document.documentElement && document.documentElement.clientWidth) {
 	        return document.documentElement.clientWidth;
 	    }
 
@@ -279,7 +279,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	function windowHeight() {
+	function getHeight() {
 	    if (self.innerHeight) {
 	        return self.innerHeight;
 	    }
@@ -362,26 +362,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        container = document.body,
 	        parentEl = this.parentEl;
 
-	    var winW = windowWidth(),
-	        winH = windowHeight(),
-	        containerW = container.offsetWidth < winW ? container.offsetWidth : winW,
-	        containerH = container.offsetHeight < winH ? container.offsetHeight : winH,
+	    var containerW = getWidth(),
+	        containerH = getHeight(),
 	        containerAspect = containerW / containerH;
-
-	    if (container.nodeName === 'BODY') {
-	        setStyles(container, {
-	            height: 'auto'
-	        });
-
-	        if (winH > container.offsetHeight) {
-	            setStyles(container, {
-	                height: '100%'
-	            });
-	            setStyles(document.documentElement, {
-	                height: '100%'
-	            });
-	        }
-	    }
 
 	    if (containerAspect < mediaAspect) {
 
@@ -443,36 +426,48 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	DriveIn.prototype._setImageData = function(data) {
 	    this.mediaAspect = data.naturalWidth / data.naturalHeight;
-	    this._updateSize(this.mediaEl, 'image', this.mediaAspect);
+
+	    if (!this.isTouch) {
+	        this._updateSize(this.mediaEl, 'image', this.mediaAspect);
+	    }
 	};
 
 	DriveIn.prototype._playVideoItem = function(item, itemNum) {
 	    var mediaEl = this.mediaEl,
 	        source,
-	        src,
+	        sourceEl,
+	        sourceEls = [],
 	        posterSrc,
 	        canPlayType;
 
-	    for (var i in item) {
+	    for (var i = item.length - 1; i >= 0; i--) {
 	        source = item[i];
-	        canPlayType = mediaEl.canPlayType(source.type);
-	        if (canPlayType === 'probably') {
-	            src = source.src;
-	        } else if (canPlayType && !src) {
-	            src = source.src;
-	        }
 
 	        if (source.type.search(/^image/) === 0 && !posterSrc) {
 	            posterSrc = source.src;
+	        } else {
+	            sourceEl = createEl('source', { src: source.src, type: source.type });
+	        }
+
+	        if (sourceEl) {
+	            canPlayType = mediaEl.canPlayType(source.type);
+	            if (canPlayType === 'probably') {
+	                sourceEls.unshift(sourceEl);
+	            } else {
+	                sourceEls.push(sourceEl);
+	            }
 	        }
 	    }
 
-	    if (src) {
+	    if (sourceEls.length) {
 
 	        this.emit('media.loading');
 
-	        mediaEl.src = src;
-	        mediaEl.preload = 'metadata';
+	        mediaEl.preload = 'auto';
+
+	        for (var j = sourceEls.length - 1; j >= 0; j--) {
+	            mediaEl.appendChild(sourceEls[j]);
+	        }
 
 	        if (posterSrc) {
 	            mediaEl.poster = posterSrc;
@@ -502,10 +497,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var source,
 	        src;
 
-	    for (var i in item) {
-	        source = item[i];
-	        if (source.type.search(/^image/) === 0 && !src) {
-	            src = source.src;
+	    if (item && item.length) {
+	        for (var i in item) {
+	            source = item[i];
+	            if (source.type.search(/^image/) === 0 && !src) {
+	                src = source.src;
+	            }
 	        }
 	    }
 
@@ -526,7 +523,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	};
 
+	DriveIn.prototype._setBackgroundItem = function() {
+	    this.parentEl.style['background-image'] = 'url("' + this.poster.src + '")';
+	};
+
 	DriveIn.prototype._playItem = function(item, itemNum) {
+	    if (this.isTouch) {
+	        this._setBackgroundItem();
+
+	        // This should default to load the poster, which provides
+	        // the necessary events
+	        this._playImageItem();
+	        return;
+	    }
+
 	    if (this.currMediaType === 'video') {
 	        this._playVideoItem(item, itemNum);
 	    }
@@ -568,10 +578,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        mediaEl = this.mediaEl;
 
 	    function onLoadedMetadata(data) {
-	        // Safari often stalls on first load, so kickstart it.
-	        if (mediaEl.networkState < 2) {
-	            mediaEl.load();
-	        }
 	        self._setVideoData(data);
 	        self.emit('media.metadata', data);
 	    }
@@ -650,16 +656,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    function onLoad() {
 	        self.emit('media.canplay');
+
+	        self._setImageData(this);
+	        self.emit('media.metadata', this);
+	        self.emit('media.playing', self.currentItem);
+
+	        if (self.isTouch) return;
+
 	        if (self.playlistLength > 1) {
 	            if (self._slideshowTimer) self._slideshowTimer.destroy();
 	            self._slideshowTimer = new Timer(ended, self.slideshowItemDuration * 1000);
 
 	            self._slideshowTimer.on('pause', onPause);
 	        }
-
-	        self._setImageData(this);
-	        self.emit('media.metadata', this);
-	        self.emit('media.playing', self.currentItem);
 	    }
 
 	    function onEnded() {
@@ -673,6 +682,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	DriveIn.prototype._attachListeners = function() {
 	    var self = this,
 	        mediaEl = this.mediaEl;
+
+	    if (this.isTouch) {
+	        this._attachImageListeners();
+	        return;
+	    }
 
 	    function onResize() {
 	        window.requestAnimationFrame(function () {
@@ -716,18 +730,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype._setParent = function(el) {
-	    this.parentEl = el;
 
-	    setStyles(this.parentEl, {
-	        position: 'absolute',
-	        display: 'block',
-	        transform: 'translate3d(-50%,-50%,0)',
-	        '-webkit-transform': 'translate3d(-50%,-50%,0)',
-	        left: '50%',
-	        top: '50%'
-	    });
+	    if (this.isTouch) {
 
-	    return this.parentEl;
+	        setStyles(el, {
+	            width: '100%',
+	            height: '100%',
+	            display: 'block',
+	            'background-position': '50% 50%',
+	            'background-repeat': 'no-repeat no-repeat',
+	            'background-attachment': 'local',
+	            'background-size': 'cover'
+	        });
+
+	    } else {
+
+	        setStyles(el, {
+	            position: 'absolute',
+	            display: 'block',
+	            transform: 'translate3d(-50%,-50%,0)',
+	            '-webkit-transform': 'translate3d(-50%,-50%,0)',
+	            left: '50%',
+	            top: '50%'
+	        });
+	    }
+
+	    return el;
 	};
 
 	DriveIn.prototype._cleanup = function() {
@@ -743,11 +771,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    if (this.mediaEl) this._cleanup();
 
-	    if (this.slideshow) {
-	        mediaType = 'image';
+	    if (this.isTouch) {
+
+	        this.currMediaType = 'image';
 	        mediaEl = createEl('img');
+	        setStyles(mediaEl, { display: 'none' });
+	        return mediaEl;
+
+	    } else if (this.slideshow) {
+
+	        this.currMediaType = 'image';
+	        mediaEl = createEl('img');
+
 	    } else {
-	        mediaType = 'video';
+
+	        this.currMediaType = 'video';
 	        mediaEl = createEl('video', {
 	            height: 1,
 	            width: 1,
@@ -755,27 +793,51 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    }
 
-	    mediaEl.style.opacity = 0;
+	    if (mediaEl) {
 
-	    this.mediaEl = mediaEl;
-	    this.currMediaType = mediaType;
+	        mediaEl.style.opacity = 0;
+	        setStyles(mediaEl, {
+	            display: 'block'
+	        });
 
-	    setStyles(this.mediaEl, {
-	        display: 'block'
-	    });
+	        return mediaEl;
+	    }
+	};
 
-	    this.parentEl.appendChild(mediaEl);
+	DriveIn.prototype._prepareContainer = function() {
+	    var containerW = getWidth(),
+	        containerH = getHeight();
+
+	    if (document.body.offsetHeight < containerH) {
+	        setStyles(document.body, {
+	            height: 'auto'
+	        });
+
+	        if (containerH > document.body.offsetHeight) {
+	            setStyles(document.body, {
+	                height: '100%'
+	            });
+	            setStyles(document.documentElement, {
+	                height: '100%'
+	            });
+	        }
+	    }
 	};
 
 	DriveIn.prototype.init = function(options) {
 	    options = options || {};
 
 	    if ('ontouchstart' in window || options.slideshow) {
-	        this.slideshow = true;
+	        this.isTouch = true;
 	    }
 
-	    this._setParent(options.el);
-	    this._createMediaEl();
+	    this._prepareContainer();
+
+	    this.parentEl = this._setParent(options.el);
+	    var mediaEl = this._createMediaEl();
+	    this.parentEl.appendChild(mediaEl);
+	    this.mediaEl = mediaEl;
+
 	    this._attachListeners();
 	};
 

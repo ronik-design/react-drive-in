@@ -1,6 +1,6 @@
 {
   "name": "react-drive-in",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "React component supporting background videos and playlists.",
   "main": "dist/react-drive-in.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "browser-sync": "^1.5.2",
-    "drive-in": "^1.1.0",
+    "drive-in": "^1.2.0",
     "gulp": "^3.8.6",
     "gulp-gh-pages": "^0.4.0",
     "gulp-header": "^1.2.1",
