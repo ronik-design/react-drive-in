@@ -111,12 +111,14 @@ showPlaylist | `Array` | none | no | An array of video URL strings, or of video 
 poster | `String` | none | no | A fallback image to use, when all else fails.
 mute | `Boolean` | true | no | Should the videos be played muted?
 loop | `Boolean` | true | no | Should videos / playlists loop or begin again when finished?
+loopPlaylistItems | `Boolean` | false | no | Individual playlist videos will loop, rather than the whole list itself. 
 slideshow | `Boolean` | false | no | Force the component to display fallback images / poster rather than videos.
 onPlaying | `Function` | null | no | Register a callback for when the video / slideshow starts playing.
 onPause | `Function` | null | no | Register a callback for when the video / slideshow is paused.
 onTime | `Function` | null | no | Emits regular time-tracking events from Drive-In lib with current media item play position.
 onTimeFrequency | `Number` | 500 | no | Frequency at which to emit time-tracking events.
 onCanPlay | `Function` | null | no | Callback for when a loaded media item can play.
+playbackRate | `Number` | 1.0 | no | Adjust the playback rate of videos. Per the HTML5 video method.
 
 ## Developing
 

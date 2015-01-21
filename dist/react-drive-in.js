@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.2.0
+ * @version v1.3.0
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
@@ -75,6 +75,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        duration: React.PropTypes.number,
 	        mute: React.PropTypes.bool,
 	        loop: React.PropTypes.bool,
+	        loopPlaylistItems: React.PropTypes.bool,
 	        playbackRate: React.PropTypes.number,
 	        slideshow: React.PropTypes.bool,
 	        onPlaying: React.PropTypes.func,
@@ -90,6 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            duration: 'auto',
 	            mute: true,
 	            loop: true,
+	            loopPaylistItems: false,
 	            slideshow: false,
 	            volume: 0.5,
 	            onTimeFrequency: 500
@@ -159,6 +161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            mute: this.props.mute,
 	            duration: this.props.duration,
 	            loop: this.props.loop,
+	            loopPlaylistItems: this.props.loopPlaylistItems,
 	            poster: this.props.poster
 	        };
 
@@ -260,75 +263,17 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
-	    inherits = __webpack_require__(7),
+	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
+	    inherits = __webpack_require__(8),
 	    Timer = __webpack_require__(4),
-	    Playlist = __webpack_require__(5);
-
-	function getWidth() {
-	    if (self.innerHeight) {
-	        return self.innerWidth;
-	    }
-
-	    if (document.documentElement && document.documentElement.clientWidth) {
-	        return document.documentElement.clientWidth;
-	    }
-
-	    if (document.body) {
-	        return document.body.clientWidth;
-	    }
-	}
-
-	function getHeight() {
-	    if (self.innerHeight) {
-	        return self.innerHeight;
-	    }
-
-	    if (document.documentElement && document.documentElement.clientHeight) {
-	        return document.documentElement.clientHeight;
-	    }
-
-	    if (document.body) {
-	        return document.body.clientHeight;
-	    }
-	}
-
-	function setStyles(el, props) {
-	    var cssString = '';
-	    for (var p in props) {
-	        cssString += p + ':' + props[p] + ';';
-	    }
-	    el.style.cssText += ';' + cssString;
-	}
-
-	function findPoster(playlist) {
-	    var poster,
-	        item;
-
-	    for (var i in playlist) {
-	        item = playlist[i];
-
-	        if (item.constructor === Array) {
-	            poster = findPoster(item);
-	        } else {
-	            if (item.type.search(/^image/) > -1) {
-	                return item;
-	            }
-	        }
-
-	        if (poster) {
-	            return poster;
-	        }
-	    }
-	}
-
-	function createEl(name, props) {
-	    var el = document.createElement(name);
-	    for (var prop in props) {
-	        el[prop] = props[prop];
-	    }
-	    return el;
-	}
+	    Playlist = __webpack_require__(5),
+	    Utils = __webpack_require__(6),
+	    getWidth = Utils.getWidth,
+	    getHeight = Utils.getHeight,
+	    setStyles = Utils.setStyles,
+	    findPoster = Utils.findPoster,
+	    createEl = Utils.createEl,
+	    replaceChildren = Utils.replaceChildren;
 
 	function DriveIn() {
 	    this._listeners = [];
@@ -342,12 +287,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.mediaAspect = 16 / 9;
 	    this.playlist = null;
 	    this.loop = true;
+	    this.loopPlaylistItems = false;
 	    this.slideshow = false;
 
 	    this.playlistLength = 0;
 	    this.currentItem = 0;
 	    this.slideshowItemDuration = 10;
 	    this._slideshowTimer = null;
+	    this._seeking = false;
 
 	    this.poster = null;
 
@@ -358,9 +305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	DriveIn.prototype._updateSize = function(mediaEl, mediaType, mediaAspect) {
 
-	    var pad = 1,
-	        container = document.body,
-	        parentEl = this.parentEl;
+	    var pad = 1;
 
 	    var containerW = getWidth(),
 	        containerH = getHeight(),
@@ -370,7 +315,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // taller
 
-	        setStyles(parentEl, {
+	        setStyles(this.parentEl, {
 	            width: Math.ceil(containerH * mediaAspect) + 'px',
 	            height: containerH + pad + 'px'
 	        });
@@ -395,7 +340,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        // wider
 
-	        setStyles(parentEl, {
+	        setStyles(this.parentEl, {
 	            width: containerW + 'px',
 	            height: Math.ceil(containerW / mediaAspect) + 1 + 'px'
 	        });
@@ -403,7 +348,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (mediaType === 'video') {
 
 	            setStyles(mediaEl, {
-	                width: parentEl.offsetWidth + 'px',
+	                width: this.parentEl.offsetWidth + 'px',
 	                height: 'auto'
 	            });
 
@@ -464,18 +409,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.emit('media.loading');
 
 	        mediaEl.preload = 'auto';
-
-	        for (var j = sourceEls.length - 1; j >= 0; j--) {
-	            mediaEl.appendChild(sourceEls[j]);
-	        }
+	        if (this.playlistLength < 2 || this.loopPlaylistItems) mediaEl.loop = true;
+	        if (this.mute) this.setVolume(0);
 
 	        if (posterSrc) {
 	            mediaEl.poster = posterSrc;
 	        }
 
-	        if (this.playlistLength < 2) mediaEl.loop = true;
-	        if (this.mute) this.setVolume(0);
-
+	        replaceChildren(mediaEl, sourceEls);
 	        this.currentItem = itemNum;
 
 	        mediaEl.load();
@@ -544,6 +485,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.currMediaType === 'image') {
 	        this._playImageItem(item, itemNum);
 	    }
+
+	    this._seeking = false;
 	};
 
 	DriveIn.prototype._loadPlaylist = function(playlist) {
@@ -704,29 +647,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._attachImageListeners();
 	    }
 
-	    this.on('media.ended', function () {
+	    function onMediaEnded() {
+	        if (this._seeking) return;
+
+	        var itemNum = 0;
+
+	        if (self.playlistLength > 1 && self.loopPlaylistItems) {
+	            if( self.currMediaType === 'image') {
+	                // Images need a reboot, video is handled via `loop`
+	                self.play(self.currentItem);
+	            }
+	            return;
+	        }
+
 	        if (self.playlistLength > 1 && self.loop) {
-	            var itemNum = 0;
 	            if (self.currentItem + 1 < self.playlistLength) {
 	                itemNum = self.currentItem + 1;
 	            }
 	            self.play(itemNum);
 	        }
-	    });
+	    }
 
-	    this.on('media.canplay', function () {
+	    function onMediaCanplay() {
 	        mediaEl.style.opacity = 1;
 	        self.canplay = true;
-	    });
+	    }
 
-	    this.on('media.metadata', function () {
+	    function onMediaMetadata() {
 	        self.metadataLoaded = true;
-	    });
+	    }
 
-	    this.on('media.loading', function () {
+	    function onMediaLoading() {
 	        self.canplay = false;
 	        self.metadataLoaded = false;
-	    });
+	    }
+
+	    this.on('media.ended', onMediaEnded);
+	    this.on('media.canplay', onMediaCanplay);
+	    this.on('media.metadata', onMediaMetadata);
+	    this.on('media.loading', onMediaLoading);
 	};
 
 	DriveIn.prototype._setParent = function(el) {
@@ -766,8 +725,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype._createMediaEl = function() {
-	    var mediaEl,
-	        mediaType;
+	    var mediaEl;
 
 	    if (this.mediaEl) this._cleanup();
 
@@ -805,8 +763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype._prepareContainer = function() {
-	    var containerW = getWidth(),
-	        containerH = getHeight();
+	    var containerH = getHeight();
 
 	    if (document.body.offsetHeight < containerH) {
 	        setStyles(document.body, {
@@ -861,9 +818,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (options.hasOwnProperty('mute')) {
 	        this.mute = options.mute;
 	    }
+
 	    if (options.hasOwnProperty('loop')) {
 	        this.loop = options.loop;
 	    }
+
+	    if (options.hasOwnProperty('loopPlaylistItems')) {
+	        this.loopPlaylistItems = options.loopPlaylistItems;
+	        if (this.loopPlaylistItems) {
+	            this.loop = false;
+	        }
+	    }
+
 	    var playlist = Playlist.makePlaylist(rawPlaylist);
 
 	    if (options.poster) {
@@ -912,6 +878,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	DriveIn.prototype.play = function(itemNum) {
+	    this._seeking = true;
+
 	    if (typeof itemNum === 'number') {
 	        this._playItem(this.playlist[itemNum], itemNum);
 	    } else {
@@ -976,8 +944,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/** @jsx React.DOM */var Jvent = __webpack_require__(6),
-	    inherits = __webpack_require__(7);
+	/** @jsx React.DOM */var Jvent = __webpack_require__(7),
+	    inherits = __webpack_require__(8);
 
 	function Timer(callback, delay) {
 	    var self = this;
@@ -1094,6 +1062,105 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */var internals = {};
+
+	internals.getWidth = function() {
+	    if (self.innerHeight) {
+	        return self.innerWidth;
+	    }
+
+	    if (document.documentElement && document.documentElement.clientWidth) {
+	        return document.documentElement.clientWidth;
+	    }
+
+	    if (document.body) {
+	        return document.body.clientWidth;
+	    }
+	};
+
+	internals.getHeight = function() {
+	    if (self.innerHeight) {
+	        return self.innerHeight;
+	    }
+
+	    if (document.documentElement && document.documentElement.clientHeight) {
+	        return document.documentElement.clientHeight;
+	    }
+
+	    if (document.body) {
+	        return document.body.clientHeight;
+	    }
+	};
+
+	internals.setStyles = function(el, props) {
+	    var cssString = '';
+	    for (var p in props) {
+	        cssString += p + ':' + props[p] + ';';
+	    }
+	    el.style.cssText += ';' + cssString;
+	};
+
+	internals.findPoster = function(playlist) {
+	    var poster,
+	        item;
+
+	    for (var i in playlist) {
+	        item = playlist[i];
+
+	        if (item.constructor === Array) {
+	            poster = internals.findPoster(item);
+	        } else {
+	            if (item.type.search(/^image/) > -1) {
+	                return item;
+	            }
+	        }
+
+	        if (poster) {
+	            return poster;
+	        }
+	    }
+	};
+
+	internals.eachNode = function(nodes, fn) {
+	    [].slice.call(nodes).forEach(fn);
+	};
+
+	internals.replaceChildren = function(el, newChildren) {
+	    var children = el.children || el.childNodes;
+
+	    if (children.length) {
+	        internals.eachNode(children, function (childEl) {
+	            var newChild = newChildren.shift();
+	            if (newChild) {
+	                el.replaceChild(newChild, childEl);
+	            } else {
+	                el.removeChild(childEl);
+	            }
+	        });
+	    }
+
+	    if (newChildren.length) {
+	        newChildren.forEach(function (newChild) {
+	            el.appendChild(newChild);
+	        });
+	    }
+	};
+
+	internals.createEl = function(name, props) {
+	    var el = document.createElement(name);
+	    for (var prop in props) {
+	        el[prop] = props[prop];
+	    }
+	    return el;
+	};
+
+	module.exports = internals;
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */'use strict';
@@ -1257,7 +1324,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/** @jsx React.DOM */if (typeof Object.create === 'function') {

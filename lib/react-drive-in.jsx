@@ -11,6 +11,7 @@ module.exports = React.createClass({
         duration: React.PropTypes.number,
         mute: React.PropTypes.bool,
         loop: React.PropTypes.bool,
+        loopPlaylistItems: React.PropTypes.bool,
         playbackRate: React.PropTypes.number,
         slideshow: React.PropTypes.bool,
         onPlaying: React.PropTypes.func,
@@ -26,6 +27,7 @@ module.exports = React.createClass({
             duration: 'auto',
             mute: true,
             loop: true,
+            loopPaylistItems: false,
             slideshow: false,
             volume: 0.5,
             onTimeFrequency: 500
@@ -95,6 +97,7 @@ module.exports = React.createClass({
             mute: this.props.mute,
             duration: this.props.duration,
             loop: this.props.loop,
+            loopPlaylistItems: this.props.loopPlaylistItems,
             poster: this.props.poster
         };
 
