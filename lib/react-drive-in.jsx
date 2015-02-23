@@ -8,7 +8,6 @@ module.exports = React.createClass({
         show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
         showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
         poster: React.PropTypes.string,
-        duration: React.PropTypes.number,
         mute: React.PropTypes.bool,
         loop: React.PropTypes.bool,
         loopPlaylistItems: React.PropTypes.bool,
@@ -24,7 +23,6 @@ module.exports = React.createClass({
     getDefaultProps() {
         return {
             className: 'drive-in',
-            duration: 'auto',
             mute: true,
             loop: true,
             loopPaylistItems: false,
@@ -95,7 +93,6 @@ module.exports = React.createClass({
 
         options = {
             mute: this.props.mute,
-            duration: this.props.duration,
             loop: this.props.loop,
             loopPlaylistItems: this.props.loopPlaylistItems,
             poster: this.props.poster
