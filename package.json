@@ -58,6 +58,7 @@
   },
   "homepage": "https://github.com/ronik-design/react-drive-in",
   "dependencies": {
+    "gulp": "^3.8.11",
     "inherits": "^2.0.1",
     "jvent": "^0.2.0"
   },

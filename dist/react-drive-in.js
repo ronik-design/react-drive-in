@@ -1,6 +1,6 @@
 /*
  * React Video - React component supporting background videos and playlists.
- * @version v1.3.0
+ * @version v1.3.1
  * @link https://github.com/ronik-design/react-drive-in
  * @license ISC
  * @author Ronik Design (http://www.ronikdesign.com)
@@ -72,7 +72,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        show: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
 	        showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
 	        poster: React.PropTypes.string,
-	        duration: React.PropTypes.number,
 	        mute: React.PropTypes.bool,
 	        loop: React.PropTypes.bool,
 	        loopPlaylistItems: React.PropTypes.bool,
@@ -88,7 +87,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    getDefaultProps:function() {
 	        return {
 	            className: 'drive-in',
-	            duration: 'auto',
 	            mute: true,
 	            loop: true,
 	            loopPaylistItems: false,
@@ -159,7 +157,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        options = {
 	            mute: this.props.mute,
-	            duration: this.props.duration,
 	            loop: this.props.loop,
 	            loopPlaylistItems: this.props.loopPlaylistItems,
 	            poster: this.props.poster
