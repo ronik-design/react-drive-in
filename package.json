@@ -1,10 +1,17 @@
 {
   "name": "react-drive-in",
-  "version": "1.3.1",
+  "version": "1.3.4",
   "description": "React component supporting background videos and playlists.",
   "main": "dist/react-drive-in.js",
   "scripts": {
-    "run": "gulp default"
+    "build": "npm run lint; npm run transpile; npm run build-browser; npm run build-browser-min; npm run styles",
+    "transpile": "babel src --out-dir lib --stage 0",
+    "styles": "lessc --autoprefix='last 5 versions' src/react-drive-in.less > dist/react-drive-in.css",
+    "build-browser": "browserify src/react-drive-in.jsx -t [envify --NODE_ENV production ] -t babelify --outfile dist/react-drive-in.js --standalone ReactDriveIn",
+    "build-browser-min": "browserify src/react-drive-in.jsx -t [envify --NODE_ENV production ] -t babelify --standalone ReactDriveIn | uglifyjs -mc > dist/react-drive-in.min.js",
+    "server": "browser-sync start --server example --server dist",
+    "lint": "eslint src",
+    "watch": "watch 'npm run build-browser && npm run styles' src"
   },
   "repository": {
     "type": "git",
@@ -21,26 +28,23 @@
     "react-component"
   ],
   "peerDependencies": {
-    "react": ">=0.12.0"
+    "react": ">=0.13.0"
   },
   "devDependencies": {
-    "browser-sync": "^1.5.2",
-    "drive-in": "^1.3.0",
-    "gulp": "^3.8.6",
-    "gulp-gh-pages": "^0.4.0",
-    "gulp-header": "^1.2.1",
-    "gulp-less": "^2.0.1",
-    "gulp-minify-css": "^0.3.12",
-    "gulp-rename": "^1.2.0",
-    "gulp-shell": "^0.2.10",
-    "gulp-util": "^3.0.1",
+    "babel": "^5.2.17",
+    "babelify": "^6.1.0",
+    "browser-sync": "^2.7.1",
+    "browserify": "^10.1.3",
+    "browserify-shim": "^3.8.6",
+    "envify": "^3.4.0",
+    "eslint": "^0.21.0",
+    "eslint-plugin-react": "^2.2.0",
     "jest-cli": "^0.1.18",
-    "jsx-loader": "^0.11.2",
+    "less": "^2.5.0",
     "less-plugin-autoprefix": "^1.3.0",
-    "lodash": "^2.4.1",
-    "react-tools": "^0.11.2",
-    "webpack": "^1.4.4",
-    "yargs": "^1.3.2"
+    "react": "^0.13.3",
+    "uglifyjs": "^2.4.10",
+    "watch": "^0.16.0"
   },
   "author": {
     "name": "Ronik Design",
@@ -57,12 +61,15 @@
     "url": "https://github.com/ronik-design/react-drive-in/issues"
   },
   "homepage": "https://github.com/ronik-design/react-drive-in",
-  "dependencies": {
-    "gulp": "^3.8.11",
-    "inherits": "^2.0.1",
-    "jvent": "^0.2.0"
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
   },
-  "browser": {
-    "inherits": "./node_modules/inherits/inherits_browser.js"
+  "browserify-shim": {
+    "react": "global:React"
+  },
+  "dependencies": {
+    "drive-in": "^1.3.4"
   }
 }

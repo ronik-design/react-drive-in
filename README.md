@@ -119,16 +119,19 @@ onTime | `Function` | null | no | Emits regular time-tracking events from Drive-
 onTimeFrequency | `Number` | 500 | no | Frequency at which to emit time-tracking events.
 onCanPlay | `Function` | null | no | Callback for when a loaded media item can play.
 playbackRate | `Number` | 1.0 | no | Adjust the playback rate of videos. Per the HTML5 video method.
+isTouch | `Function` | null | no | Provide a custom function for touch detection
 
 ## Developing
 
 You can clone this repo and then:
 
 ```bash
-npm install && gulp
+$ npm install
+$ npm run watch
+$ npm run server
 ```
 
-This will install all dev dependencies and launch browser sync in Chrome.
+This will install all dev dependencies, let you watch sources and run a dev server.
 
 ## License
 

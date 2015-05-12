@@ -1,0 +1,21 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "rules": {
+        "quotes": [1, "single"],
+        "strict": [2, "global"],
+        "semi": [1, "always"],
+        "new-cap": false,
+        "max-len": [1, 80, 4],
+        "react/jsx-uses-vars": 1
+    },
+    "ecmaFeatures": {
+        "modules": true,
+        "jsx": true
+    },
+    "plugins": [
+        "react"
+    ]
+}
