@@ -70,6 +70,6 @@
     "react": "global:React"
   },
   "dependencies": {
-    "drive-in": "^1.3.4"
+    "drive-in": "^1.4.1"
   }
 }
