@@ -149,7 +149,7 @@ class ReactDriveIn extends React.Component {
 
     render() {
         return (
-          <div ref="wrap" id="drive-in-wrap" className={this.props.className}>
+          <div ref="wrap" className={this.props.className + ' drive-in-wrap'}>
             <div ref="media" className="drive-in-media"></div>
           </div>
         );

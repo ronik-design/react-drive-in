@@ -539,22 +539,22 @@ var DriveIn = (function (_Jvent) {
         },
         _prepareContainer: {
             value: function _prepareContainer() {
-                var containerH = getHeight();
+                // var containerH = getHeight();
 
-                if (document.body.offsetHeight < containerH) {
-                    setStyles(document.body, {
-                        height: "auto"
-                    });
+                // if (document.body.offsetHeight < containerH) {
+                //     setStyles(document.body, {
+                //         height: "auto"
+                //     });
 
-                    if (containerH > document.body.offsetHeight) {
-                        setStyles(document.body, {
-                            height: "100%"
-                        });
-                        setStyles(document.documentElement, {
-                            height: "100%"
-                        });
-                    }
-                }
+                //     if (containerH > document.body.offsetHeight) {
+                //         setStyles(document.body, {
+                //             height: "100%"
+                //         });
+                //         setStyles(document.documentElement, {
+                //             height: "100%"
+                //         });
+                //     }
+                // }
             }
         },
         init: {
@@ -731,6 +731,7 @@ var DriveIn = (function (_Jvent) {
 })(Jvent);
 
 module.exports = DriveIn;
+
 },{"./playlist":3,"./timer":4,"./utils":5,"jvent":6}],3:[function(require,module,exports){
 "use strict";
 
@@ -1339,7 +1340,7 @@ var ReactDriveIn = (function (_React$Component) {
         value: function render() {
             return _react2['default'].createElement(
                 'div',
-                { ref: 'wrap', id: 'drive-in-wrap', className: this.props.className },
+                { ref: 'wrap', className: this.props.className + ' drive-in-wrap' },
                 _react2['default'].createElement('div', { ref: 'media', className: 'drive-in-media' })
             );
         }
