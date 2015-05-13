@@ -166,7 +166,7 @@
                     <button class="button" onClick="modeSelect('slideshow');">Images</button>
                 </div>
 
-                <h4 class="subheading">Item selection</h4>
+                <h4 class="subheading">Item selection <span class="now-playing">(Now Playing: <span id="now-playing"></span>)</span></h4>
 
                 <div class="button-container">
                     <button class="button" onClick="itemSelect(1);">Item #1</button>
@@ -199,7 +199,7 @@
     var currMode = 'video';
 
     function onPlaying(itemNum) {
-    document.getElementById('currItem').innerHTML = itemNum + 1;
+        document.getElementById('now-playing').innerHTML = itemNum + 1;
     }
 
     function modeSelect(mode) {

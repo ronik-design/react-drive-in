@@ -256,3 +256,8 @@ body {
     top: 0.1rem;
 }
 
+.now-playing {
+    text-tranform: uppercase;
+    color: #bbb;
+    font-size: 1.2rem;
+}
