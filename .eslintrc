@@ -7,7 +7,7 @@
         "quotes": [1, "single"],
         "strict": [2, "global"],
         "semi": [1, "always"],
-        "new-cap": false,
+        "new-cap": 0,
         "max-len": [1, 80, 4],
         "react/jsx-uses-vars": 1
     },
