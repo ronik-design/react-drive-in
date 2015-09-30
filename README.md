@@ -67,7 +67,7 @@ So easy. React is the only dependency:
       onPause={onPause}
       loop={true}
       slideshow={false}
-      mure={true}
+      mute={true}
     />,
     $mountNode
   );
