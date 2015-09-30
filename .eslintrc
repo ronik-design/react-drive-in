@@ -1,21 +1,10 @@
 {
-    "env": {
-        "browser": true,
-        "es6": true
-    },
-    "rules": {
-        "quotes": [1, "single"],
-        "strict": [2, "global"],
-        "semi": [1, "always"],
-        "new-cap": 0,
-        "max-len": [1, 80, 4],
-        "react/jsx-uses-vars": 1
-    },
-    "ecmaFeatures": {
-        "modules": true,
-        "jsx": true
-    },
-    "plugins": [
-        "react"
-    ]
+  "extends": "defaults/configurations/walmart/es6-react",
+  "rules": {
+    "max-statements": 0,
+    "react/no-did-mount-set-state": 0
+  },
+  "env": {
+    "browser": true
+  }
 }
