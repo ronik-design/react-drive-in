@@ -1,6 +1,6 @@
 {
   "name": "react-drive-in",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "React component supporting background videos and playlists.",
   "main": "lib/react-drive-in.js",
   "scripts": {
@@ -37,7 +37,6 @@
     "babelify": "^6.3.0",
     "browser-sync": "^2.9.7",
     "browserify": "^11.2.0",
-    "browserify-shim": "^3.8.10",
     "envify": "^3.4.0",
     "eslint": "^1.5.1",
     "eslint-config-defaults": "^6.0.0",
@@ -74,6 +73,7 @@
     "react": "global:React"
   },
   "dependencies": {
+    "browserify-shim": "^3.8.10",
     "drive-in": "^1.4.2"
   }
 }
