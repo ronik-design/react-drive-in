@@ -1,6 +1,6 @@
 {
   "name": "react-drive-in",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "React component supporting background videos and playlists.",
   "main": "lib/react-drive-in.js",
   "scripts": {
