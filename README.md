@@ -2,7 +2,7 @@
 
 ![npm release](https://img.shields.io/npm/v/react-drive-in.svg?style=flat)
 
-A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 5k minified and gzipped. This React component is a wrapper over the core [Drive-In](https://github.com/ronik-design/drive-in) lib. 
+A wicked awesome replacement for BigVideo.js that is lighter with fewer dependencies. It _does not_ use jQuery, video.js, or any other large libraries. Only 5k minified and gzipped. This React component is a wrapper over the core [Drive-In](https://github.com/ronik-design/drive-in) lib.
 
 Demo and some example functionality here: [github.io](http://ronik-design.github.io/react-drive-in/)
 
@@ -25,9 +25,9 @@ So easy. React is the only dependency:
 - The easiest example
 ```javascript
   var DriveIn = require('react-drive-in');
-  
+
   React.render(
-    <DriveIn 
+    <DriveIn
       show="http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4"
       poster="http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg"
     />,
@@ -56,12 +56,12 @@ So easy. React is the only dependency:
       'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg'
     ]
   ];
-  
+
   var onPlaying = function(itemNum) {};
   var onPause = function() {};
-      
+
   React.render(
-    <DriveIn 
+    <DriveIn
       showPlaylist={playlist}
       onPlaying={onPlaying}
       onPause={onPause}
@@ -77,7 +77,7 @@ So easy. React is the only dependency:
 
 The show and showPlaylist properties have many options. See [example/index.html](example/index.html) for an fairly complex set up.
 
-- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ 'video.mp4', 'video.ogv', 'video.jpg' ]). 
+- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ 'video.mp4', 'video.ogv', 'video.jpg' ]).
 - `showPlaylist` is for MULTIPLE ITEMS. You can provide either an array or strings (e.g., [ 'video1.mp4', 'video2.mp4' ]) or an array of fallback arrays (e.g., [ [ 'video1.mp4', 'video1.ogv' ], [ 'video2.mp4', 'video2.ogv' ])
 
 ## Details
@@ -108,10 +108,11 @@ Property | Type | Default | Required | Description
 -------- | ---- | ------- | -------- |-----------
 show | `String`,`Array` | none | no | The video or video fallback array to show.
 showPlaylist | `Array` | none | no | An array of video URL strings, or of video fallback arrays.
+play | `Number` | none | no | Similar to `show` but used to play a video at a given index in the `showPlaylist` array.
 poster | `String` | none | no | A fallback image to use, when all else fails.
 mute | `Boolean` | true | no | Should the videos be played muted?
 loop | `Boolean` | true | no | Should videos / playlists loop or begin again when finished?
-loopPlaylistItems | `Boolean` | false | no | Individual playlist videos will loop, rather than the whole list itself. 
+loopPlaylistItems | `Boolean` | false | no | Individual playlist videos will loop, rather than the whole list itself.
 slideshow | `Boolean` | false | no | Force the component to display fallback images / poster rather than videos.
 onPlaying | `Function` | null | no | Register a callback for when the video / slideshow starts playing.
 onPause | `Function` | null | no | Register a callback for when the video / slideshow is paused.
@@ -142,4 +143,3 @@ See the [License](LICENSE) file.
 - The repo contains a clip from [this video](https://www.youtube.com/watch?v=U7IC-L2fq2o) by YouTube user [lundbekegholm](https://www.youtube.com/channel/UCMx-iVKPpKiRPQfc39nXvXw?spfreload=10) released under a Creative Commons license.
 - [BigVideo.js](http://dfcb.github.io/BigVideo.js/) was the inspiration.
 - [react-video](https://github.com/pedronauck/react-video) provided a great project scaffold for a React component.
-
