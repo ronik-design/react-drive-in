@@ -24,7 +24,7 @@ class ReactDriveIn extends React.Component {
   }
 
   getMedia() {
-    return this.refs.media.getDOMNode();
+    return this.refs.media;
   }
 
   getPlaylist() {
