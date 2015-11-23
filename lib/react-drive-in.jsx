@@ -24,7 +24,7 @@ class ReactDriveIn extends React.Component {
   }
 
   getMedia() {
-    return this.refs.media.getDOMNode();
+    return this.refs.media;
   }
 
   getPlaylist() {
@@ -143,8 +143,9 @@ class ReactDriveIn extends React.Component {
   }
 
   render() {
+    const classes = `${this.props.className} drive-in-wrap`;
     return (
-      <div ref="wrap" className={this.props.className + " drive-in-wrap"}>
+      <div ref="wrap" className={classes}>
         <div ref="media" className="drive-in-media"></div>
       </div>
     );

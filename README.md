@@ -10,12 +10,11 @@ Created by [Ronik Design](http://www.ronikdesign.com).
 
 ## Install
 
-So easy. React is the only dependency:
-[React](http://facebook.github.io/react/downloads.html).
+So easy. React is the only required peer dependency: [React](http://facebook.github.io/react/downloads.html).
 
 - Using NPM
 ```bash
-  $ npm install --save react-drive-in
+  $ npm install --save-dev react-drive-in
 ```
 
 - [Download the latest release](https://github.com/ronik-design/react-drive-in/releases/latest)
@@ -65,9 +64,8 @@ So easy. React is the only dependency:
       showPlaylist={playlist}
       onPlaying={onPlaying}
       onPause={onPause}
-      loop={true}
-      slideshow={false}
-      mute={true}
+      loop
+      mute
     />,
     $mountNode
   );
@@ -128,8 +126,7 @@ You can clone this repo and then:
 
 ```bash
 $ npm install
-$ npm run watch
-$ npm run server
+$ npm run develop
 ```
 
 This will install all dev dependencies, let you watch sources and run a dev server.

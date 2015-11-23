@@ -1,18 +1,19 @@
 {
   "name": "react-drive-in",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "React component supporting background videos and playlists.",
-  "main": "lib/react-drive-in.js",
+  "main": "dist/react-drive-in.js",
+  "jsnext:main": "lib/react-drive-in.jsx",
   "scripts": {
-    "compile": "babel -d lib/ src/",
-    "styles": "lessc --autoprefix='last 5 versions' src/react-drive-in.less > dist/react-drive-in.css && lessc --autoprefix='last 5 versions' src/react-drive-in-multi.less > dist/react-drive-in-multi.css",
-    "build-browser": "browserify src/react-drive-in.jsx -t [envify --NODE_ENV production ] -t babelify --outfile dist/react-drive-in.js --standalone ReactDriveIn",
-    "build-browser-min": "browserify src/react-drive-in.jsx -t [envify --NODE_ENV production ] -t babelify --standalone ReactDriveIn | uglifyjs -mc > dist/react-drive-in.min.js",
-    "prepublish": "npm run compile",
-    "test": "lab -a code --sourcemaps --transform test/transform.js",
-    "coverage": "lab -a code --sourcemaps --transform test/transform.js -r html -o coverage.html",
+    "build": "mkdir -p dist && npm run build-styles && npm run build-node && npm run build-browser",
+    "build-styles": "lessc --autoprefix='last 5 versions' lib/react-drive-in.less > dist/react-drive-in.css && lessc --autoprefix='last 5 versions' lib/react-drive-in-multi.less > dist/react-drive-in-multi.css",
+    "build-browser": "node rollup-browser.js",
+    "build-node": "node rollup-node.js",
+    "test": "eslint lib",
+    "prepublish": "npm test && npm run build",
     "server": "browser-sync start --server example --server dist",
-    "watch": "watch 'npm run build-browser && npm run styles' src"
+    "watch": "watch 'npm run build-browser && npm run build-styles' lib",
+    "develop": "npm run build && npm run server & npm run watch"
   },
   "repository": {
     "type": "git",
@@ -28,25 +29,33 @@
     "playlist",
     "react-component"
   ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
   "peerDependencies": {
-    "react": ">=0.13.0"
+    "react": "^0.14.3"
   },
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-eslint": "^4.1.3",
-    "babelify": "^6.3.0",
+    "babel": "^6.1.18",
+    "babel-cli": "^6.2.0",
+    "babel-eslint": "^4.1.5",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-es2015-rollup": "^1.0.0",
+    "babel-preset-react": "^6.1.18",
     "browser-sync": "^2.9.7",
-    "browserify": "^11.2.0",
-    "envify": "^3.4.0",
-    "eslint": "^1.5.1",
-    "eslint-config-defaults": "^6.0.0",
-    "eslint-plugin-filenames": "^0.1.2",
-    "eslint-plugin-react": "^3.5.0",
-    "lab": "^6.1.0",
+    "eslint": "^1.7.3",
+    "eslint-config-defaults": "^7.0.1",
+    "eslint-plugin-filenames": "^0.2.0",
+    "eslint-plugin-react": "^3.10.0",
     "less": "^2.5.3",
     "less-plugin-autoprefix": "^1.5.1",
-    "react": "^0.13.3",
-    "uglifyjs": "^2.4.10",
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3",
+    "rollup": "^0.21.0",
+    "rollup-plugin-babel": "^2.1.0",
+    "rollup-plugin-commonjs": "^1.4.0",
+    "rollup-plugin-inject": "^1.2.0",
+    "rollup-plugin-npm": "^1.1.0",
     "watch": "^0.16.0"
   },
   "author": {
@@ -64,16 +73,7 @@
     "url": "https://github.com/ronik-design/react-drive-in/issues"
   },
   "homepage": "https://github.com/ronik-design/react-drive-in",
-  "browserify": {
-    "transform": [
-      "browserify-shim"
-    ]
-  },
-  "browserify-shim": {
-    "react": "global:React"
-  },
   "dependencies": {
-    "browserify-shim": "^3.8.10",
-    "drive-in": "^1.4.2"
+    "drive-in": "^1.5.0"
   }
 }

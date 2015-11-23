@@ -4,166 +4,171 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Example | React Drive-In</title>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Mouse+Memoirs' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+    <link href="http://fonts.googleapis.com/css?family=Mouse+Memoirs" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="react-drive-in.css">
     <style>
         html, body {
-            height: 100%;
+          height: 100%;
         }
-        .content {
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
-            -webkit-transform: translateY(-50%);
-            text-align: center;
+        h2 {
+          color: #fff;
         }
-        h1 {
-            font-family: 'Mouse Memoirs', sans-serif;
-            margin: 0px;
+        .row {
+          padding: 50px 0;
         }
-        .car {
-            display: inline-block;
-            position: relative;
-            font-size: 900%;
-        }
-        .car svg {
-            position: absolute;
-            top: 75px;
-            left: 10px;
-        }
-
         button {
-            width: 70px;
-            height: 70px;
-            background-color:#000;
-            border: 1px solid #000;
-            color: #fff;
-            border-radius: 35px;
-            margin: .5em;
+          background-color:#000;
+          border: 1px solid #000;
+          color: #ccc;
+          border-radius: 5px;
+          padding: 10px;
+        }
+        button:hover {
+          color: #fff;
         }
         button:focus {
-            outline: 0;
+          color: #fff;
+          outline: 0;
         }
         .buttons {
-            padding: .2em;
+          padding: .2em;
         }
     </style>
   </head>
   <body>
-    <div class="content">
-      <div class="mode-select buttons">
-        <button onClick="modeSelect('video');">Videos</button>
-        <button onClick="modeSelect('slideshow');">Images</button>
-      </div>
 
-      <div class="item-select buttons">
-        <button onClick="itemSelect(1);">Item #1</button>
-        <button onClick="itemSelect(2);">Item #2</button>
-        <button onClick="itemSelect(3);">Item #3</button>
-        <button onClick="toTime(2);">2 sec</button>
-        <button onClick="toTime(1);">1 sec</button>
-      </div>
-
-      <div class="toggle buttons">
-        <button onClick="playToggle();">Play / Pause</button>
-        <button onClick="muteToggle();">Mute / Unmute</button>
-      </div>
-
-      <div class="car">
-        <svg width="145" height="35" xmlns="http://www.w3.org/2000/svg">
-          <rect width="145" height="35"/>
-        </svg>
-        <i class="fa fa-car"></i>
-      </div>
-      <div>
-        <h2>Currently Playing: <span id="currItem"></span></h2>
-      </div>
-    </div>
     <div id="drive-in"></div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react-with-addons.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
-    <script src="react-drive-in.js"></script>
-    <script type="text/jsx">
-      /** @jsx React.DOM */
-      var DriveIn = ReactDriveIn,
-          driveInEl = document.getElementById('drive-in'),
-          driveIn;
+    <div class="section hero">
+      <div class="container">
+        <div class="row">
+          <div class="mode-select buttons">
+            <button onClick="example.modeSelect('video');">Videos</button>
+            <button onClick="example.modeSelect('slideshow');">Images</button>
+          </div>
 
-      var currMode = 'video';
+          <div class="item-select buttons">
+            <button onClick="example.itemSelect(1);">Item #1</button>
+            <button onClick="example.itemSelect(2);">Item #2</button>
+            <button onClick="example.itemSelect(3);">Item #3</button>
+            <button onClick="example.toTime(2);">2 sec</button>
+            <button onClick="example.toTime(1);">1 sec</button>
+          </div>
 
-      function onPlaying(itemNum) {
-        document.getElementById('currItem').innerHTML = itemNum + 1;
-      }
+          <div class="toggle buttons">
+            <button onClick="example.playToggle();">Play / Pause</button>
+            <button onClick="example.muteToggle();">Mute / Unmute</button>
+          </div>
 
-      function modeSelect(mode) {
-        if (mode === currMode) return;
-        currMode = mode;
-        React.unmountComponentAtNode(driveInEl);
-        driveIn = React.render(
-            <DriveIn
-                showPlaylist={playlist}
-                onPlaying={onPlaying}
-                slideshow={(mode === 'slideshow')}
-            />,
-          driveInEl
-        );
-      }
+          <div>
+            <h2>Currently Playing: <span id="currItem"></span></h2>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      function itemSelect(itemNum) {
-        driveIn.play(itemNum - 1);
-      }
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-with-addons.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-dom.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
 
-      function toTime(time) {
-        driveIn.seekTo(time);
-      }
+    <script src="react-drive-in-browser.js"></script>
 
-      function playToggle() {
-        if (driveIn.state.playing) {
-          driveIn.pause();
-        } else {
-          driveIn.play();
-        }
-      }
+<script type="text/babel">
 
-      function muteToggle() {
-        if (driveIn.state.mute) {
-          driveIn.unmute();
-        } else {
-          driveIn.mute();
-        }
-      }
+/* eslint no-unused-vars:0 */
 
-      var playlist = [
-        [
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.mp4?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.ogv?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.jpg?raw=true'
-        ],
-        [
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.mp4?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.ogv?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.jpg?raw=true'
-        ],
-        [
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.mp4?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.ogv?raw=true',
-          'https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.jpg?raw=true'
-        ]
-      ];
+const PLAYLIST = [
+  [
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.mp4?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.ogv?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.jpg?raw=true"
+  ],
+  [
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.mp4?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.ogv?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.jpg?raw=true"
+  ],
+  [
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.mp4?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.ogv?raw=true",
+    "https://github.com/ronik-design/react-drive-in/blob/master/example/glacier.jpg?raw=true"
+  ]
+];
 
-      driveIn = React.render(
-        <DriveIn
-          showPlaylist={playlist}
-          onPlaying={onPlaying}
-          slideshow={false}
-          loopPlaylistItems={true}
-          />,
-        driveInEl
-      );
+const React = window.React;
+const ReactDOM = window.ReactDOM;
+const DriveIn = window.ReactDriveIn;
+const driveInEl = document.getElementById("drive-in");
 
-    </script>
+const example = {};
+let currMode = "video";
+let driveIn;
+
+const onPlaying = function (itemNum) {
+  console.log("ON PLAYING:", itemNum);
+  document.getElementById("currItem").innerHTML = itemNum + 1;
+};
+
+example.modeSelect = function (mode) {
+
+  if (mode === currMode) {
+    return;
+  }
+
+  currMode = mode;
+
+  ReactDOM.unmountComponentAtNode(driveInEl);
+
+  driveIn = ReactDOM.render(
+      <DriveIn
+        showPlaylist={PLAYLIST}
+        onPlaying={onPlaying}
+        slideshow={(mode === "slideshow")}
+      />,
+    driveInEl
+  );
+};
+
+example.itemSelect = function (itemNum) {
+  driveIn.play(itemNum - 1);
+};
+
+example.toTime = function (time) {
+  driveIn.seekTo(time);
+};
+
+example.playToggle = function () {
+  if (driveIn.state.playing) {
+    driveIn.pause();
+  } else {
+    driveIn.play();
+  }
+};
+
+example.muteToggle = function () {
+  if (driveIn.state.mute) {
+    driveIn.unmute();
+  } else {
+    driveIn.mute();
+  }
+};
+
+window.example = example;
+
+driveIn = ReactDOM.render(
+  <DriveIn
+    showPlaylist={PLAYLIST}
+    onPlaying={onPlaying}
+    slideshow={false}
+    loopPlaylistItems
+  />,
+  driveInEl
+);
+</script>
+
   </body>
 </html>
+
