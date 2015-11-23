@@ -139,7 +139,8 @@ var ReactDriveIn = (function (_React$Component) {
 
       this.DI.init({
         el: this.getMedia(),
-        slideshow: this.props.slideshow
+        slideshow: this.props.slideshow,
+        startPaused: this.props.paused
       });
 
       var options = {
@@ -147,8 +148,7 @@ var ReactDriveIn = (function (_React$Component) {
         loop: this.props.loop,
         loopPlaylistItems: this.props.loopPlaylistItems,
         poster: this.props.poster,
-        isTouch: this.props.isTouch,
-        startPaused: this.props.paused
+        isTouch: this.props.isTouch
       };
 
       if (this.props.showPlaylist) {
