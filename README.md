@@ -80,15 +80,12 @@ So easy. React is the only required peer dependency: [React](http://facebook.git
 import babel from "rollup-plugin-babel";
 import npm from "rollup-plugin-npm";
 import commonjs from "rollup-plugin-commonjs";
+import env from "rollup-plugin-env";
 
 export default {
   entry: "lib/main.jsx",
   plugins: [
-    { 
-      intro() { 
-        return `var process = ${JSON.stringify({ env: { NODE_ENV: "production" } })}`
-      } 
-    },
+    env({ NODE_ENV: "production" }),
     npm({ jsnext: true, main: true }),
     commonjs(),
     babel()
