@@ -77,27 +77,26 @@ So easy. React is the only required peer dependency: [React](http://facebook.git
 
 - Sample bundling script for the browser using [rollup.js](http://rollupjs.org):
 ```js
-const rollup = require("rollup").rollup;
-const babel = require("rollup-plugin-babel");
-const npm = require("rollup-plugin-npm");
-const commonjs = require("rollup-plugin-commonjs");
+import babel from "rollup-plugin-babel";
+import npm from "rollup-plugin-npm";
+import commonjs from "rollup-plugin-commonjs";
 
-const input = {
+export default {
   entry: "lib/main.jsx",
   plugins: [
+    { 
+      intro() { 
+        return `var process = ${JSON.stringify({ env: { NODE_ENV: "production" } })}`
+      } 
+    },
     npm({ jsnext: true, main: true }),
     commonjs(),
     babel()
-  ]
-};
-
-const output = {
+  ],
   dest: "dist/bundle.js",
   moduleName: "MyBundle",
   format: "iife"
 };
-
-rollup(input).then((bundle) => bundle.write(output)).catch(console.error);
 ```
 
 

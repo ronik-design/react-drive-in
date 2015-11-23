@@ -1,19 +1,19 @@
 {
   "name": "react-drive-in",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "description": "React component supporting background videos and playlists.",
   "main": "dist/react-drive-in.js",
   "jsnext:main": "lib/react-drive-in.jsx",
   "scripts": {
     "build": "mkdir -p dist && npm run build-styles && npm run build-node && npm run build-browser",
     "build-styles": "lessc --autoprefix='last 5 versions' lib/react-drive-in.less > dist/react-drive-in.css && lessc --autoprefix='last 5 versions' lib/react-drive-in-multi.less > dist/react-drive-in-multi.css",
-    "build-browser": "node rollup-browser.js",
-    "build-node": "node rollup-node.js",
+    "build-browser": "rollup -c rollup.config.browser.js",
+    "build-node": "rollup -c",
     "test": "eslint lib",
     "prepublish": "npm test && npm run build",
-    "server": "browser-sync start --server example --server dist",
+    "dev-server": "browser-sync start --no-open --server example --server dist",
     "watch": "watch 'npm run build-browser && npm run build-styles' lib",
-    "develop": "npm run build && npm run server & npm run watch"
+    "develop": "npm run build && npm run dev-server & npm run watch"
   },
   "repository": {
     "type": "git",
@@ -43,6 +43,7 @@
     "babel-preset-es2015-rollup": "^1.0.0",
     "babel-preset-react": "^6.1.18",
     "browser-sync": "^2.9.7",
+    "drive-in": "^1.5.1",
     "eslint": "^1.7.3",
     "eslint-config-defaults": "^7.0.1",
     "eslint-plugin-filenames": "^0.2.0",
@@ -51,6 +52,7 @@
     "less-plugin-autoprefix": "^1.5.1",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
+    "react-drive-in": "^1.7.1",
     "rollup": "^0.21.0",
     "rollup-plugin-babel": "^2.1.0",
     "rollup-plugin-commonjs": "^1.4.0",
