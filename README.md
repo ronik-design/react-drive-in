@@ -23,10 +23,12 @@ So easy. React is the only required peer dependency: [React](http://facebook.git
 
 - The easiest example
 ```javascript
-  var DriveIn = require('react-drive-in');
+  const React = require("react");
+  const ReactDOM = require("react-dom");
+  const ReactDriveIn = require("react-drive-in");
 
-  React.render(
-    <DriveIn
+  ReactDOM.render(
+    <ReactDriveIn
       show="http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4"
       poster="http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg"
     />,
@@ -36,31 +38,33 @@ So easy. React is the only required peer dependency: [React](http://facebook.git
 
 - More complex
 ```javascript
-  var DriveIn = require('react-drive-in');
+  const React = require("react");
+  const ReactDOM = require("react-dom");
+  const ReactDriveIn = require("react-drive-in");
 
-  var playlist = [
+  const PLAYLIST = [
     [
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.mp4?raw=true',
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.ogv?raw=true',
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.jpg?raw=true'
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.mp4?raw=true",
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.ogv?raw=true",
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/pelo.jpg?raw=true"
     ],
     [
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.mp4?raw=true',
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.ogv?raw=true',
-      'https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.jpg?raw=true'
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.mp4?raw=true",
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.ogv?raw=true",
+      "https://github.com/ronik-design/react-drive-in/blob/master/example/kaledo.jpg?raw=true"
     ],
     [
-      'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4',
-      'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.ogv',
-      'http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg'
+      "http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.mp4",
+      "http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.ogv",
+      "http://raw.githubusercontent.com/ronik-design/react-drive-in/master/example/glacier.jpg"
     ]
   ];
 
-  var onPlaying = function(itemNum) {};
-  var onPause = function() {};
+  const onPlaying = function(itemNum) {};
+  const onPause = function() {};
 
-  React.render(
-    <DriveIn
+  ReactDOM.render(
+    <ReactDriveIn
       showPlaylist={playlist}
       onPlaying={onPlaying}
       onPause={onPause}
@@ -71,12 +75,38 @@ So easy. React is the only required peer dependency: [React](http://facebook.git
   );
 ```
 
+- Sample bundling script for the browser using [rollup.js](http://rollupjs.org):
+```js
+const rollup = require("rollup").rollup;
+const babel = require("rollup-plugin-babel");
+const npm = require("rollup-plugin-npm");
+const commonjs = require("rollup-plugin-commonjs");
+
+const input = {
+  entry: "lib/main.jsx",
+  plugins: [
+    npm({ jsnext: true, main: true }),
+    commonjs(),
+    babel()
+  ]
+};
+
+const output = {
+  dest: "dist/bundle.js",
+  moduleName: "MyBundle",
+  format: "iife"
+};
+
+rollup(input).then((bundle) => bundle.write(output)).catch(console.error);
+```
+
+
 ## What to `show`
 
 The show and showPlaylist properties have many options. See [example/index.html](example/index.html) for an fairly complex set up.
 
-- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ 'video.mp4', 'video.ogv', 'video.jpg' ]).
-- `showPlaylist` is for MULTIPLE ITEMS. You can provide either an array or strings (e.g., [ 'video1.mp4', 'video2.mp4' ]) or an array of fallback arrays (e.g., [ [ 'video1.mp4', 'video1.ogv' ], [ 'video2.mp4', 'video2.ogv' ])
+- `show` is for SINGLE ITEMS. You can provide either a string, or a fallback array (e.g., [ "video.mp4", "video.ogv", "video.jpg" ]).
+- `showPlaylist` is for MULTIPLE ITEMS. You can provide either an array or strings (e.g., [ "video1.mp4", "video2.mp4" ]) or an array of fallback arrays (e.g., [ [ "video1.mp4", "video1.ogv" ], [ "video2.mp4", "video2.ogv" ])
 
 ## Details
 
