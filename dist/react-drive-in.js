@@ -68,6 +68,7 @@ var ReactDriveIn = (function (_React$Component) {
       className: props.className,
       mute: props.mute,
       loop: props.loop,
+      playing: !props.paused,
       loopPaylistItems: props.loopPlaylistItems,
       slideshow: props.slideshow,
       volume: props.volume,
@@ -146,7 +147,8 @@ var ReactDriveIn = (function (_React$Component) {
         loop: this.props.loop,
         loopPlaylistItems: this.props.loopPlaylistItems,
         poster: this.props.poster,
-        isTouch: this.props.isTouch
+        isTouch: this.props.isTouch,
+        startPaused: this.props.paused
       };
 
       if (this.props.showPlaylist) {
@@ -238,6 +240,7 @@ ReactDriveIn.propTypes = {
   showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
   poster: React.PropTypes.string,
   mute: React.PropTypes.bool,
+  paused: React.PropTypes.bool,
   loop: React.PropTypes.bool,
   loopPlaylistItems: React.PropTypes.bool,
   playbackRate: React.PropTypes.number,

@@ -133,6 +133,7 @@ Property | Type | Default | Required | Description
 show | `String`,`Array` | none | no | The video or video fallback array to show.
 showPlaylist | `Array` | none | no | An array of video URL strings, or of video fallback arrays.
 play | `Number` | none | no | Similar to `show` but used to play a video at a given index in the `showPlaylist` array.
+paused | `Boolean` | false | no | Set the playlist to a paused state on initial load.
 poster | `String` | none | no | A fallback image to use, when all else fails.
 mute | `Boolean` | true | no | Should the videos be played muted?
 loop | `Boolean` | true | no | Should videos / playlists loop or begin again when finished?

@@ -11,6 +11,7 @@ class ReactDriveIn extends React.Component {
       className: props.className,
       mute: props.mute,
       loop: props.loop,
+      playing: !props.paused,
       loopPaylistItems: props.loopPlaylistItems,
       slideshow: props.slideshow,
       volume: props.volume,
@@ -70,7 +71,8 @@ class ReactDriveIn extends React.Component {
 
     this.DI.init({
       el: this.getMedia(),
-      slideshow: this.props.slideshow
+      slideshow: this.props.slideshow,
+      startPaused: this.props.paused
     });
 
     const options = {
@@ -162,6 +164,7 @@ ReactDriveIn.propTypes = {
   showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
   poster: React.PropTypes.string,
   mute: React.PropTypes.bool,
+  paused: React.PropTypes.bool,
   loop: React.PropTypes.bool,
   loopPlaylistItems: React.PropTypes.bool,
   playbackRate: React.PropTypes.number,

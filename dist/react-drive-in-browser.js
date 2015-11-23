@@ -508,6 +508,7 @@ var ReactDriveIn = (function (React) { 'use strict';
       _this.loop = true;
       _this.loopPlaylistItems = false;
       _this.slideshow = false;
+      _this.startPaused = false;
 
       _this.playlistLength = 0;
       _this.currentItem = 0;
@@ -870,7 +871,11 @@ var ReactDriveIn = (function (React) { 'use strict';
 
         var onCanPlay = function onCanPlay() {
           _this2.emit("media.canplay");
-          mediaEl.play();
+
+          if (!_this2.startPaused) {
+            mediaEl.play();
+          }
+
           if (_this2._seeking) {
             _this2._seeking = false;
           }
@@ -916,6 +921,10 @@ var ReactDriveIn = (function (React) { 'use strict';
             }
 
             _this3._slideshowTimer = new Timer(ended, _this3.slideshowItemDuration * 1000);
+
+            if (_this3.startPaused) {
+              _this3._slideshowTimer.pause();
+            }
 
             _this3._slideshowTimer.on("pause", onPause);
           }
@@ -1085,6 +1094,8 @@ var ReactDriveIn = (function (React) { 'use strict';
         this.isTouch = options.isTouch !== undefined ? options.isTouch : "ontouchstart" in window;
 
         this.slideshow = options.slideshow;
+
+        this.startPaused = options.startPaused;
 
         this.parentEl = this._setParent(options.el);
 
@@ -1259,6 +1270,7 @@ var ReactDriveIn = (function (React) { 'use strict';
         className: props.className,
         mute: props.mute,
         loop: props.loop,
+        playing: !props.paused,
         loopPaylistItems: props.loopPlaylistItems,
         slideshow: props.slideshow,
         volume: props.volume,
@@ -1329,7 +1341,8 @@ var ReactDriveIn = (function (React) { 'use strict';
 
         this.DI.init({
           el: this.getMedia(),
-          slideshow: this.props.slideshow
+          slideshow: this.props.slideshow,
+          startPaused: this.props.paused
         });
 
         var options = {
@@ -1429,6 +1442,7 @@ var ReactDriveIn = (function (React) { 'use strict';
     showPlaylist: React.PropTypes.oneOfType([React.PropTypes.array]),
     poster: React.PropTypes.string,
     mute: React.PropTypes.bool,
+    paused: React.PropTypes.bool,
     loop: React.PropTypes.bool,
     loopPlaylistItems: React.PropTypes.bool,
     playbackRate: React.PropTypes.number,
